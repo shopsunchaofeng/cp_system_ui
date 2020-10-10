@@ -111,7 +111,7 @@
     <!--查看测评任务-->
     <cprwnape  v-if="cprwVisible" ref="cprwnape" @refreshDataList="getDataList"></cprwnape>
     <!--单元测评页面-->
-    <cprwnape  v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cprwnape>
+    <cpcontent  v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cpcontent>
   </div>
 </template>
 ·
@@ -122,6 +122,7 @@
   import ProjectCpuser from './projectcpuser'
   import Cprwnape from './cprwnape'
   import Cpnape from './cpnape'
+  import Cpcontent from './cpcontent'
 
   export default {
     data () {
@@ -143,7 +144,7 @@
       }
     },
     components: {
-      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpnape
+      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpnape,Cpcontent
     },
     activated () {
       this.getDataList()
