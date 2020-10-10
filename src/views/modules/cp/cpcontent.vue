@@ -1,100 +1,298 @@
 <template>
-  <div class="mod-content">
-    <div class="shadow">
-      <div class="cpPro">初级测评师：YH666</div>
-    </div>
-    <div class="shadow">
-      <el-row :gutter="20">
-        <el-col :span="16"
-          ><div class="br1 pd32">
-            <h3>通用要求</h3>
-            <h4>7.1.1安全物理环境</h4>
-            <h4>7.1.1.1.1测评单元（L2-PES1-01）</h4>
-            <div class="mb24">该测评单元包括以下要求：</div>
-            <div class="content mb24">
-              <el-row :gutter="20">
-                <el-col :span="6"> a）测评指标：</el-col>
-                <el-col :span="18">
-                  机房场地应选择在具有防震、防风和防雨等能力的建筑内
-                </el-col>
-              </el-row>
-            </div>
-            <div class="content mb24">
-              <el-row :gutter="20">
-                <el-col :span="6"> b) 测评对象：</el-col>
-                <el-col :span="18"> 记录类文档和机房 </el-col>
-              </el-row>
-            </div>
-            <div class="content mb24">
-              <el-row :gutter="20">
-                <el-col :span="6"> 具体测评指标：</el-col>
-                <el-col :span="18">
-                  <el-input
-                    placeholder="说明：涉及多项指标的逗号隔开"
-                  ></el-input>
-                </el-col>
-              </el-row>
-            </div>
-            <div class="mb24">c) 测评实施包括以下内容</div>
-            <div v-for="(item, index) in 3" :key="index">
-              <div class="mb24">
-                1) 应检查所在建筑物是否具有建筑抗震设防审批文档
-              </div>
-              <div class="content mb24">
-                <el-radio-group>
-                  <el-row :gutter="20" class="mb12">
-                    <el-col :span="6">
-                      <el-radio label="1">符合</el-radio>
-                    </el-col>
-                    <el-col :span="18">
-                      <el-input placeholder=""></el-input>
-                    </el-col>
-                  </el-row>
-                  <el-row :gutter="20">
-                    <el-col :span="6">
-                      <el-radio label="2">不符合</el-radio>
-                    </el-col>
-                    <el-col :span="18">
-                      <el-input placeholder=""></el-input>
-                    </el-col>
-                  </el-row>
-                </el-radio-group>
-              </div>
-            </div>
-            <el-divider></el-divider>
+  <el-dialog
+    :title="`测评任务`"
+    :close-on-click-modal="false"
+    :visible.sync="visible"
+    :fullscreen="true"
+    :close-on-press-escape="false"
+  >
+    <div class="mod-content">
+      <div class="shadow">
+        <div class="cpPro" v-html="'测评师：' + detail.cpsname"></div>
+      </div>
+      <el-form
+        :model="dataForm"
+        :rules="dataRule"
+        ref="dataForm"
+        @keyup.enter.native="dataFormSubmit()"
+      >
+        <div class="shadow">
+          <el-row :gutter="20">
+            <el-col :span="16"
+              ><div class="br1 pd32">
+                <h3 v-html="detail.yiceng"></h3>
+                <h4 v-html="detail.erceng"></h4>
+                <h4 v-html="detail.sanceng"></h4>
+                <h4 v-html="detail.siceng"></h4>
+                <div class="mb24" v-html="detail.yaoqiu"></div>
+                <div class="content mb24">
+                  <span v-html="detail.xa"></span>
+                  <el-button
+                    type="primary"
+                    round
+                    icon="el-icon-circle-plus-outline"
+                    style="margin-left: 10px"
+                    @click="addNewDetailList()"
+                    >添加新的测评项</el-button
+                  >
+                </div>
 
-            <div class="content mb24">
-              <el-row :gutter="20">
-                <el-col :span="6"> d) 测评实施包括以下内容：</el-col>
-                <el-col :span="18"
-                  >如果1）-4）均为肯定，则符合测评单元指标要求，
-                  否则不符合或部分符合本测评单元指标要求
-                </el-col>
-              </el-row>
-            </div>
-            <el-divider></el-divider>
-            <div class="content mb24">
-              <el-radio-group>
-                <el-radio>符合</el-radio>
-                <el-radio>部分符合 </el-radio>
-                <el-radio>不符合 </el-radio>
-              </el-radio-group>
-            </div>
-          </div></el-col
-        >
-        <el-col :span="8"><div class="pd32">测评指南</div></el-col>
-      </el-row>
+                <div
+                  v-for="(item, index) in newDetailList"
+                  :key="'newDetailList' + index"
+                >
+                  <div class="content mb24">
+                    <el-row :gutter="20">
+                      <el-col :span="6"> b) 测评对象：</el-col>
+                      <el-col :span="18">
+                        <el-input
+                          placeholder=""
+                          v-model="item.xbName"
+                        ></el-input>
+                      </el-col>
+                    </el-row>
+                  </div>
+                  <div class="content mb24">
+                    <el-row :gutter="20">
+                      <el-col :span="6"> 具体测评指标：</el-col>
+                      <el-col :span="18">
+                        <el-input
+                          placeholder="说明：涉及多项指标的逗号隔开"
+                          v-model="item.juticpzb"
+                        ></el-input>
+                      </el-col>
+                    </el-row>
+                  </div>
+                  <div class="content mb24" v-html="detail.xc"></div>
+                  <div
+                    v-for="(itemm, indexx) in item.project"
+                    :key="'project' + indexx"
+                  >
+                    <div class="mb24" v-html="itemm.name"></div>
+                    <div class="content mb24">
+                      <el-radio-group v-model="itemm.checked">
+                        <el-row :gutter="20" class="mb12">
+                          <el-col :span="6">
+                            <el-radio label="0">符合</el-radio>
+                          </el-col>
+                          <el-col :span="18">
+                            <el-input
+                              placeholder=""
+                              v-model="itemm.okValue"
+                            ></el-input>
+                          </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                          <el-col :span="6">
+                            <el-radio label="1">不符合</el-radio>
+                          </el-col>
+                          <el-col :span="18">
+                            <el-input
+                              placeholder=""
+                              v-model="itemm.errorValue"
+                            ></el-input>
+                          </el-col>
+                        </el-row>
+                      </el-radio-group>
+                    </div>
+                  </div>
+                  <el-divider></el-divider>
+                  <div class="content mb24" v-html="detail.xd"></div>
+                  <el-divider></el-divider>
+                  <div class="content mb24">
+                    <el-form-item label="" prop="result">
+                      <el-radio-group v-model="item.result">
+                        <el-radio label="1">符合</el-radio>
+                        <el-radio label="0.5" v-if="detail.isteshu == 0"
+                          >部分符合
+                        </el-radio>
+                        <el-radio label="0">不符合 </el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                  </div>
+                  <el-divider></el-divider>
+                </div>
+
+                <div class="content mb24" v-html="detail.xb"></div>
+                <div class="content mb24">
+                  <el-row :gutter="20">
+                    <el-col :span="6"> 具体测评指标：</el-col>
+                    <el-col :span="18">
+                      <el-input
+                        placeholder="说明：涉及多项指标的逗号隔开"
+                        v-model="dataForm.juticpzb"
+                      ></el-input>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="content mb24" v-html="detail.xc"></div>
+                <div v-for="(item, index) in detail.project" :key="index">
+                  <div class="mb24" v-html="item.name"></div>
+                  <div class="content mb24">
+                    <el-radio-group v-model="item.checked" @change="changeRadio">
+                      <el-row :gutter="20" class="mb12">
+                        <el-col :span="6">
+                          <el-radio label="0">符合</el-radio>
+                        </el-col>
+                        <el-col :span="18">
+                          <el-input
+                            placeholder=""
+                            v-model="item.okValue"
+                          ></el-input>
+                        </el-col>
+                      </el-row>
+                      <el-row :gutter="20">
+                        <el-col :span="6">
+                          <el-radio label="1">不符合</el-radio>
+                        </el-col>
+                        <el-col :span="18">
+                          <el-input
+                            placeholder=""
+                            v-model="item.errorValue"
+                          ></el-input>
+                        </el-col>
+                      </el-row>
+                    </el-radio-group>
+                  </div>
+                </div>
+
+                <el-divider></el-divider>
+                <div class="content mb24" v-html="detail.xd"></div>
+                <el-divider></el-divider>
+                <div class="content mb24">
+                  <el-form-item label="" prop="result">
+                    <el-radio-group v-model="dataForm.result">
+                      <el-radio label="1">符合</el-radio>
+                      <el-radio label="0.5" v-if="detail.isteshu == 0"
+                        >部分符合
+                      </el-radio>
+                      <el-radio label="0">不符合 </el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                </div>
+                <el-divider></el-divider></div
+            ></el-col>
+            <el-col :span="8"><div class="pd32">测评指南</div></el-col>
+          </el-row>
+        </div>
+      </el-form>
     </div>
-  </div>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" round @click="dataFormSubmit()"
+        >保存并测评下一项</el-button
+      >
+    </span>
+  </el-dialog>
 </template>
 
 <script>
 export default {
   data() {
-    return {};
+    return {
+      visible: false,
+      addOrUpdateVisible: false,
+      detail: {},
+      newDetailList: [],
+      dataForm: {
+        id: "",
+        napeid: "",
+        projectid: "",
+        cpresult: {},
+        result: "",
+      },
+      dataRule: {
+        result: [{ required: true, message: "结果不能为空", trigger: "blur" }],
+      },
+    };
   },
   mounted() {},
-  methods: {},
+  methods: {
+    changeRadio(e){
+      for(var i = 0 ; i<this.detail.project.length;i++){
+      console.log('e', this.detail.project[i].checked)
+
+      }
+    },
+    addNewDetailList() {
+      var project = JSON.parse(JSON.stringify(this.detail.project));
+      this.newDetailList.push({
+        juticpzb: "",
+        xbName: "",
+        project: project,
+        result: "",
+      });
+    },
+    dataFormSubmit() {
+      var dataForm = this.dataForm;
+      var method = dataForm.id == "" ? "post" : "put";
+      dataForm.cpresult = JSON.stringify(dataForm.cpresult);
+
+      console.log("dataFrom", dataForm);
+      return false;
+      this.$refs["dataForm"].validate((valid) => {
+        if (valid) {
+          this.$http({
+            url: `/cp/projectuser`,
+            method: `${!dataForm.id || 0 ? "post" : "put"}`,
+            data: dataForm,
+          }).then(({ data }) => {
+            if (data && data.code === 200) {
+              // this.visible = false;
+              this.$message({
+                message: "操作成功",
+                type: "success",
+                duration: 1500,
+              });
+              // this.$emit("refreshDataList");
+            }
+          });
+        }
+      });
+    },
+    // 获取数据列表
+    getDataList(projectid, systemdengji) {
+      this.visible = true;
+      this.dataForm.projectid = projectid;
+      this.$http({
+        url: "/cp/nape/dycprwlist",
+        method: "get",
+        params: {
+          page: 1,
+          limit: 1,
+          projectid: projectid,
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          var data = data.data[0];
+          this.dataForm.id = data.cpuserid;
+          this.dataForm.napeid = data.id;
+          var ii = 1;
+          var iii = "xx" + ii;
+          var project = [];
+          while (data[iii] != undefined) {
+            console.log(data[iii]);
+            if (data[iii] != "") {
+              project.push({
+                name: data[iii],
+                checked: "",
+                okValue: "",
+                errorValue: "",
+              });
+            }
+            ii++;
+            iii = "xx" + ii;
+          }
+          data.project = project;
+          console.log("project", project);
+          data.result = "";
+          data.juticpzb = "";
+          this.detail = data;
+          console.log("dataList", this.detail);
+        } else {
+        }
+      });
+    },
+  },
 };
 </script>
 <style>
@@ -124,6 +322,7 @@ export default {
 }
 .content {
   display: flex;
+  align-items: center;
 }
 .dib {
   display: inline-block;
@@ -133,5 +332,24 @@ export default {
 }
 .el-radio-group {
   width: 80%;
+}
+.el-dialog__footer {
+  text-align: center !important;
+}
+.el-dialog__footer button {
+  width: 500px;
+  height: 40px;
+  font-size: 18px;
+  font-weight: bold;
+}
+.el-form-item__label {
+  font-weight: bold;
+}
+.el-select-dropdown__item.selected {
+  font-weight: normal !important;
+  color: #606266 !important;
+}
+.el-form-item {
+  width: 100%;
 }
 </style>
