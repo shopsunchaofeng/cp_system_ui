@@ -335,7 +335,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .el-button {
   margin-bottom: 10px;
 }

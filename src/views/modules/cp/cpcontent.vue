@@ -70,7 +70,10 @@
                   >
                     <div class="mb24" v-html="itemm.name"></div>
                     <div class="content mb24">
-                      <el-radio-group v-model="itemm.checked">
+                      <el-radio-group
+                        v-model="itemm.checked"
+                        @change="changeRadio(indexx)"
+                      >
                         <el-row :gutter="20" class="mb12">
                           <el-col :span="6">
                             <el-radio label="0">符合</el-radio>
@@ -129,7 +132,10 @@
                 <div v-for="(item, index) in detail.project" :key="index">
                   <div class="mb24" v-html="item.name"></div>
                   <div class="content mb24">
-                    <el-radio-group v-model="item.checked" @change="changeRadio">
+                    <el-radio-group
+                      v-model="item.checked"
+                      @change="changeRadio(-1)"
+                    >
                       <el-row :gutter="20" class="mb12">
                         <el-col :span="6">
                           <el-radio label="0">符合</el-radio>
@@ -172,7 +178,11 @@
                 </div>
                 <el-divider></el-divider></div
             ></el-col>
-            <el-col :span="8"><div class="pd32">测评指南</div></el-col>
+            <el-col :span="8"
+              ><div class="pd32">
+                <h3 class="content mb24">作业指导书</h3>
+                <div v-html="detail.content"></div></div
+            ></el-col>
           </el-row>
         </div>
       </el-form>
@@ -207,10 +217,50 @@ export default {
   },
   mounted() {},
   methods: {
-    changeRadio(e){
-      for(var i = 0 ; i<this.detail.project.length;i++){
-      console.log('e', this.detail.project[i].checked)
+    flagOK(e) {
+      return;
+    },
+    changeRadio(e) {
+      var project;
+      if (e == -1) {
+        project = this.detail.project;
+      } else {
+        project = this.newDetailList[e].project;
+      }
+      var proFlag = project.some((item) => {
+        if (item.checked == "") {
+          return true;
+        }
+      });
+      if (proFlag) {
+        return false;
+      }
+      var result = 0;
+      if (this.detail.isteshu == 1) {
+        for (var i = 0; i < project.length; i++) {
+          if (project[i].checked != 1) {
+            result = 1;
+          }
+        }
+      } else {
+        for (var i = 0; i < project.length; i++) {
+          console.log("e", project[i].checked);
+          if (project[i].checked != 1) {
+            result = 1;
+            for (var ii = 0; ii < project.length; ii++) {
+              if (project[ii].checked == 1) {
+                result = 0.5;
+              }
+            }
+          }
+        }
+      }
+      console.log("result", result);
 
+      if (e == -1) {
+        this.dataForm.result = result;
+      } else {
+        this.newDetailList[e].result = result;
       }
     },
     addNewDetailList() {
@@ -295,7 +345,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .shadow {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   width: 100%;
