@@ -5,7 +5,8 @@
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
       <el-form-item label="作业指导书" prop="content">
-        <el-input  type="textarea" maxlength="3000" show-word-limit v-model="dataForm.content" placeholder="作业指导书"></el-input>
+       <!-- <el-input  type="textarea" maxlength="3000" show-word-limit v-model="dataForm.content" placeholder="作业指导书"></el-input>-->
+        <u-editor v-model="dataForm.content"></u-editor>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -16,7 +17,9 @@
 </template>
 
 <script>
+  import UEditor from "../../../components/ueditor/index";
   export default {
+    components: {UEditor},
     data () {
       return {
         visible: false,
