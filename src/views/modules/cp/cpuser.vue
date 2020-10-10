@@ -1,201 +1,156 @@
 <template>
-  <el-dialog
-    :title="`测评任务`"
-    :close-on-click-modal="false"
-    :visible.sync="visible"
-    :width="`1200px`">
-    <div class="mod-nape">
-      <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
-        <el-form-item>
-          <el-select v-model="searchForm.isfenp" placeholder="状态">
-            <el-option
-              v-for="store in isfenpList"
-              :key="store.isfenp"
-              :label="store.fenpStatus"
-              :value="store.isfenp">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="cpuserid" placeholder="选择测评师">
-            <el-option value="-1" key="-1" label="请选择测评师"></el-option>
-            <el-option
-              v-for="store in cpuserList"
-              :key="store.id"
-              :label="store.realName"
-              :value="store.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-input v-model="searchForm.yiceng" placeholder="第一层" clearable></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input v-model="searchForm.erceng" placeholder="第二层" clearable></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input v-model="searchForm.sanceng" placeholder="第三层" clearable></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input v-model="searchForm.siceng" placeholder="第四层" clearable></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="getDataList()">查询</el-button>
-          <el-button v-if="isAuth('cp:nape:fenpei')" type="primary" @click="fenpeiHandle()" :disabled="dataListSelections.length <= 0">分配</el-button>
-        </el-form-item>
-      </el-form>
-      <el-table
-        :data="dataList"
-        border
-        @selection-change="selectionChangeHandle"
-        style="width: 100%;">
-        <el-table-column
-          type="selection"
-          header-align="center"
-          align="center"
-          width="50">
-        </el-table-column>
-        <el-table-column
-          prop="jibie"
-          header-align="center"
-          align="center"
-          label="等级">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.jibie ===2">二级</el-tag>
-            <el-tag v-if="scope.row.jibie ===3">三级</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="yiceng"
-          header-align="center"
-          align="center"
-          label="第一层">
-        </el-table-column>
-        <el-table-column
-          prop="erceng"
-          header-align="center"
-          align="center"
-          label="第二层">
-        </el-table-column>
-        <el-table-column
-          prop="sanceng"
-          header-align="center"
-          align="center"
-          label="第三层">
-        </el-table-column>
-        <el-table-column
-          prop="siceng"
-          header-align="center"
-          align="center"
-          label="第四层">
-        </el-table-column>
-        <el-table-column
-          prop="yaoqiu"
-          header-align="center"
-          align="center"
-          label="要求">
-        </el-table-column>
-        <el-table-column
-          prop="isfenp"
-          header-align="center"
-          align="center"
-          label="状态">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.isfenp ==='-1'">未分配</el-tag>
-            <el-tag v-if="scope.row.isfenp !=='-1'">已分配</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed="right"
-          header-align="center"
-          align="center"
-          width="150"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button v-if="isAuth('cp:nape:fenpei') && scope.row.isfenp ==='-1'" type="text" size="small" @click="fenpeiHandle(scope.row.id)">分配</el-button>
-            <el-button v-if="isAuth('cp:nape:fenpei') && scope.row.isfenp !=='-1'" type="text" size="small" @click="qxfenpeiHandle(scope.row.id)">取消分配</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        @size-change="sizeChangeHandle"
-        @current-change="currentChangeHandle"
-        :current-page="searchForm.page"
-        :page-sizes="[8, 10, 20, 50, 100]"
-        :page-size="searchForm.limit"
-        :total="totalPage"
-        layout="total, sizes, prev, pager, next, jumper">
-      </el-pagination>
-      <!-- 弹窗, 新增 / 修改 -->
-      <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-    </div>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="querenHandle()">确认提交</el-button>
-    </span>
-  </el-dialog>
+  <div class="mod-user">
+    <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
+      <el-form-item>
+        <el-input v-model="searchForm.realName" placeholder="姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('base:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('base:user:remove')" type="danger" @click="deleteHandle()"
+                   :disabled="dataListSelections.length <= 0">批量删除
+        </el-button>
+        <el-button v-if="isAuth('base:user:remove')" type="danger" @click="resetHandle()"
+                   :disabled="dataListSelections.length <= 0">重置密码
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <el-table
+      :data="dataList"
+      border
+      @selection-change="selectionChangeHandle"
+      style="width: 100%;">
+      <el-table-column
+        prop="userName"
+        header-align="center"
+        align="center"
+        label="登录账号">
+      </el-table-column>
+      <el-table-column
+        prop="realName"
+        header-align="center"
+        align="center"
+        label="姓名">
+      </el-table-column>
+      <el-table-column
+        prop="mobilePhone"
+        header-align="center"
+        align="center"
+        label="手机号">
+      </el-table-column>
+      <el-table-column
+        prop="sex"
+        header-align="center"
+        align="center"
+        label="性别">
+        <template slot-scope="scope">
+          <span>{{transParam('SEX',scope.row.sex)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="cpIdcard"
+        header-align="center"
+        align="center"
+        label="身份证号">
+      </el-table-column>
+      <el-table-column
+        prop="email"
+        header-align="center"
+        align="center"
+        label="邮箱">
+      </el-table-column>
+      <el-table-column
+        prop="cpShenfen"
+        header-align="center"
+        align="center"
+        label="身份">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.cpShenfen ===15">项目经理</el-tag>
+          <el-tag v-if="scope.row.cpShenfen ===16">高级测评师</el-tag>
+          <el-tag v-if="scope.row.cpShenfen ===17">中级测评师</el-tag>
+          <el-tag v-if="scope.row.cpShenfen ===18">初级测评师</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === 0" size="small" type="danger">禁用</el-tag>
+          <el-tag v-else-if="scope.row.status === 1" size="small" type="success">正常</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        header-align="center"
+        align="center"
+        width="150"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="isAuth('base:user:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button v-if="isAuth('base:user:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      @size-change="sizeChangeHandle"
+      @current-change="currentChangeHandle"
+      :current-page="pageIndex"
+      :page-sizes="[10, 20, 50, 100]"
+      :page-size="pageSize"
+      :total="totalPage"
+      layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
+    <!-- 弹窗, 新增 / 修改 -->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+  </div>
 </template>
 
 <script>
-  import AddOrUpdate from './nape-add-or-update'
-
+  import AddOrUpdate from './cpuser-add-or-update'
   export default {
     data () {
       return {
         searchForm: {
-          jibie: -1,
-          isfenp:2,
-          fenp: 2,
-          yiceng: '',
-          erceng: '',
-          sanceng: '',
-          siceng: '',
-          page: 1,
-          limit: 8,
-          name: ''
+          realName: ''
         },
         dataList: [],
-        cpuserList: [],
-        projectid: '',
-        cpuserid: '-1',
-        isfenpList: [{isfenp:-1,fenpStatus:"全部"},{isfenp:2,fenpStatus:"未分配"},{isfenp:3,fenpStatus:"已分配"}],
+        newDataList: [],
+        pageIndex: 1,
+        pageSize: 10,
         totalPage: 0,
         dataListSelections: [],
-        visible:false,
         addOrUpdateVisible: false
       }
     },
     components: {
       AddOrUpdate
     },
+    activated () {
+      this.getDataList()
+    },
     methods: {
       // 获取数据列表
-      getDataList (projectid,systemdengji) {
-        this.visible=true
-        if (projectid){
-          this.projectid=projectid
-          this.searchForm.jibie=systemdengji
-        }
-        this.getcpuserHandle()
+      getDataList () {
         this.$http({
-          url: '/cp/nape/bushihelist',
+          url: '/base/user/cpslist',
           method: 'get',
           params: {
-            'projectid': this.projectid,
-            'isfenp': this.searchForm.isfenp,
-            'fenp': 2,
-            'jibie': this.searchForm.jibie,
-            'yiceng': this.searchForm.yiceng,
-            'erceng': this.searchForm.erceng,
-            'sanceng': this.searchForm.sanceng,
-            'siceng': this.searchForm.siceng,
             'page': this.searchForm.page,
             'limit': this.searchForm.limit,
-            'name': this.searchForm.name
+            'realName': this.searchForm.realName
           }
         }).then(({data}) => {
           if (data && data.code === 200) {
+            this.dataList = []
             this.dataList = data.page.records
+            // 方法三(不推荐，因为无法被终止)
+            // this.newDataList.forEach((item, i) => {
+            //   if (item.isAdmin === 0) {
+            //     this.dataList.push(item)
+            //   }
+            // })
             this.totalPage = data.page.total
           } else {
             this.dataList = []
@@ -205,13 +160,13 @@
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.searchForm.limit = val
-        this.searchForm.page = 1
+        this.pageSize = val
+        this.pageIndex = 1
         this.getDataList()
       },
       // 当前页
       currentChangeHandle (val) {
-        this.searchForm.page = val
+        this.pageIndex = val
         this.getDataList()
       },
       // 多选
@@ -225,83 +180,56 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
-      //获取所有测评师
-      getcpuserHandle() {
-        this.$http({
-          url: `/cp/project/getcpuserList?projectid=${this.projectid}`,
-          method: 'GET'
-        }).then(({data}) => {
-          if (data && data.code === 200) {
-            this.cpuserList = data.data
-          }
-        })
-      },
-      qxfenpeiHandle (id) {
-        let ids = id ? [id] : this.dataListSelections.map(item => {
+      resetHandle () {
+        let userIds = this.dataListSelections.map(item => {
           return item.id
         })
-        this.$http({
-          url: `/cp/nape/qxfenpei/${ids}?projectid=${this.projectid}`,
-          method: 'get'
-        }).then(({data}) => {
-          if (data && data.code === 200) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500
-            })
-            this.getDataList()
-          }
-        })
-      },
-      //单元测评任务分配确认
-      querenHandle() {
-        this.$http({
-          url: `/cp/nape/querenFenpei?projectid=${this.projectid}`,
-          method: 'GET'
-        }).then(({data}) => {
-          if (data && data.code === 200) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500
-            })
-            this.visible = false
-            this.$emit('refreshDataList')
-          }else{
-            this.$message({
-              message: data.msg,
-              type: 'error',
-              duration: 1500
-            })
-          }
-        })
-      },
-      // 分配
-      fenpeiHandle (id) {
-        if (this.cpuserid === '-1'){
-          this.$message({
-            message: '请选择测评师!',
-            type: 'error',
-            duration: 1500
+        this.$confirm(`重置后的密码为 888888 ，是否确定？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: '/base/user/resetPw',
+            method: 'post',
+            data: {'userIds': userIds}
+          }).then(({data}) => {
+            if (data && data.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1500
+              })
+              this.getDataList()
+            }
           })
-          return false
-        }
-        let ids = id ? [id] : this.dataListSelections.map(item => {
+        }).catch(() => {
+        })
+      },
+      // 删除
+      deleteHandle (id) {
+        let userIds = id ? [id] : this.dataListSelections.map(item => {
           return item.id
         })
-        this.$http({
-          url: `/cp/nape/fenpei/${ids}?projectid=${this.projectid}&cpuserid=${this.cpuserid}`,
-          method: 'get'
-        }).then(({data}) => {
-          if (data && data.code === 200) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500
-            })
-            this.getDataList()
-          }
+        this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: `/base/user/${userIds}`,
+            method: 'delete'
+          }).then(({data}) => {
+            if (data && data.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1500
+              })
+              this.getDataList()
+            }
+          })
+        }).catch(() => {
         })
       }
     }

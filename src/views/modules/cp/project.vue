@@ -121,7 +121,6 @@
   import BushiheNape from './bushihenape'
   import ProjectCpuser from './projectcpuser'
   import Cprwnape from './cprwnape'
-  import Cpnape from './cpnape'
   import Cpcontent from './cpcontent'
 
   export default {
@@ -144,7 +143,7 @@
       }
     },
     components: {
-      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpnape,Cpcontent
+      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape,Cpcontent
     },
     activated () {
       this.getDataList()
