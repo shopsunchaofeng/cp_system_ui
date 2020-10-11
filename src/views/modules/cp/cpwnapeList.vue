@@ -85,7 +85,7 @@ export default {
   data() {
     return {
       searchForm: {
-        cpnstatus: -1,
+        cpnstatus: 0,
         realName: '',
         yiceng: '',
         erceng: '',
@@ -98,7 +98,7 @@ export default {
       dataList: [],
       cpuserList: [],
       projectid: '',
-      cpnstatusList: [{ cpnstatus: -1, cpnstatusName: "全部" }, { cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }, { cpnstatus: 2, cpnstatusName: "已汇总" }],
+      cpnstatusList: [ { cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
       totalPage: 0,
       dataListSelections: [],
       visible: false,

@@ -215,6 +215,7 @@ export default {
         method: "get",
         params: {
           page: 1,
+          cpnstatus: 0,
           limit: 1,
           projectid: projectid,
         },
