@@ -47,10 +47,10 @@
           <el-button v-if="isAuth('cp:nape:fenpei') && scope.row.status ===1 && scope.row.type ===1" type="text" size="small" @click="fenpeiHandle(scope.row.id,scope.row.systemdengji)">分配测评任务</el-button>
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
-          <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="dycpHandle(scope.row.id)">单元测评</el-button>
+          <!-- <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="dycpHandle(scope.row.id)">单元测评</el-button> -->
           <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">测评任务列表</el-button>
-          <el-button v-if="isAuth('cp:project:dycp') && showhzFlag" type="text" size="small" style="color:#67c23a;" @click="huizong(scope.row.id)">汇总</el-button>
-          <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
+          <el-button v-if="isAuth('cp:project:ztcp') && showhzFlag && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
+          <!-- <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button> -->
           <el-button v-if="isAuth('cp:project:cpdetail' && (scope.row.status ===3 || scope.row.status ===4)) && scope.row.status >1" type="text" size="small" @click="cpdetailHandle(scope.row.id)">查看测评结果</el-button>
           <el-button v-if="isAuth('cp:project:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
@@ -72,6 +72,8 @@
     <cpcontent v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cpcontent>
     <!--单元列表测评页面-->
     <cpwnapeList v-if="cpwnapeListVisible" ref="cpwnapeList" @refreshDataList="getDataList"></cpwnapeList>
+    <!-- 整体测评列表 -->
+    <cpwnapeListTotal v-if="cpwnapeListTotalVisible" ref="cpwnapeListTotal" @refreshDataList="getDataList"></cpwnapeListTotal>
   </div>
 </template>
 ·
@@ -83,6 +85,7 @@ import ProjectCpuser from './projectcpuser'
 import Cprwnape from './cprwnape'
 import Cpcontent from './cpcontent'
 import CpwnapeList from './cpwnapeList'
+import CpwnapeListTotal from './cpwnapeListTotal'
 
 export default {
   data() {
@@ -102,36 +105,17 @@ export default {
       dycpVisible: false,
       addOrUpdateVisible: false,
       cpwnapeListVisible: false,
+      cpwnapeListTotalVisible: false,
       showhzFlag: false,
     }
   },
   components: {
-    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList
+    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList,CpwnapeListTotal
   },
   activated() {
     this.getDataList()
   },
   methods: {
-    huizong(e) {
-      this.$http({
-        url: "/cp/projectuser/huizong",
-        method: "get",
-        params: {
-          projectid: e,
-        },
-      }).then(({ data }) => {
-        if (data && data.code === 200) {
-          console.log('data', data)
-          this.$message({
-            message: data.msg,
-            type: 'success'
-          });
-          this.getDataList();
-        } else {
-        }
-      });
-
-    },
     // 获取数据列表
     getDataList() {
       this.getIsCpOK();
@@ -154,7 +138,7 @@ export default {
       })
 
     },
-    //获取是否完成测评
+    //是否显示整体测评
     getIsCpOK() {
       this.$http({
         url: '/cp/projectuser/ishuizong',
@@ -220,6 +204,13 @@ export default {
       this.cpuserVisible = true
       this.$nextTick(() => {
         this.$refs.projectcpuser.getDataList(projectid)
+      })
+    },
+    // 整体测评列表
+    ztcpHandle(projectid) {
+      this.cpwnapeListTotalVisible = true
+      this.$nextTick(() => {
+        this.$refs.cpwnapeListTotal.getDataList(projectid)
       })
     },
     // 单元测评列表

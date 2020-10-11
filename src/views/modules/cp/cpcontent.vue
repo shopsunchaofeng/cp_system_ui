@@ -117,11 +117,12 @@ export default {
         cpresult: [],
       },
       dataRule: {},
+      status:0,
     };
   },
   mounted() { },
   methods: {
-    
+
     xbplace(ind, e) {
       e = ind == 0 ? e.substring(9, e.length) : "";
       return e
@@ -201,7 +202,7 @@ export default {
       });
     },
     // 获取数据列表
-    getDataList(projectid) {
+    getDataList(projectid,cpuid,status) {
       this.visible = true;
       this.detail = {};
       this.dataForm = {
@@ -211,14 +212,16 @@ export default {
         cpresult: [],
       };
       this.dataForm.projectid = projectid;
+      this.status=status;
       this.$http({
         url: "/cp/nape/dycprwlist",
         method: "get",
         params: {
           page: 1,
-          cpnstatus: 0,
+          cpnstatus: status,
           limit: 1,
           projectid: projectid,
+          cpuid:cpuid
         },
       }).then(({ data }) => {
         if (data && data.code === 200) {

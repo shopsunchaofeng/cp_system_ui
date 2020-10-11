@@ -22,8 +22,8 @@
         </el-form-item>
         <el-form-item>
           <el-button @click="getDataList()">查询</el-button>
-          <el-button v-if="isAuth('cp:project:dycp')" type="primary" size="small" @click="dycpHandle">开始单元测评</el-button>
-          <el-button @click="cpresultHandle" type="success" v-if="showhzFlag">测评汇总</el-button>
+          <el-button v-if="isAuth('cp:project:dycp')" type="primary" size="small" @click="dycpHandle(-1)">开始单元测评</el-button>
+          <el-button @click="huizong" type="success" v-if="showhzFlag">测评汇总</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="dataList" border @selection-change="selectionChangeHandle" style="width: 100%;">
@@ -50,16 +50,12 @@
             <el-tag v-if="scope.row.cpnstatus ==='2'">已汇总</el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button v-if="isAuth('cp:project:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-        </template>
-      </el-table-column> -->
+        <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+          <template slot-scope="scope">
+            <el-button v-if="isAuth('cp:project:dycp')&&scope.row.status ===0" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">测评</el-button>
+            <el-button v-if="isAuth('cp:project:update')&&scope.row.status ===1"  type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">修改</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" :current-page="searchForm.page" :page-sizes="[8, 10, 20, 50, 100]" :page-size="searchForm.limit" :total="totalPage" layout="total, sizes, prev, pager, next, jumper">
       </el-pagination>
@@ -72,6 +68,9 @@
       <!--单元测评汇总页面-->
       <cpresult v-if="cpresultVisible" ref="cpresult" @refreshDataList="getDataList"></cpresult>
 
+      <!-- 整体测评及修改页面 -->
+      <cpcontentchange v-if="cpcontentchangeVisible" ref="cpcontentchange" @refreshDataList="getDataList"></cpcontentchange>
+
     </div>
   </el-dialog>
 </template>
@@ -80,6 +79,7 @@
 import AddOrUpdate from './nape-add-or-update'
 import Cpcontent from './cpcontent'
 import Cpresult from './cpresult'
+import Cpcontentchange from './cpcontentchange'
 
 export default {
   data() {
@@ -98,32 +98,60 @@ export default {
       dataList: [],
       cpuserList: [],
       projectid: '',
-      cpnstatusList: [ { cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
+      cpnstatusList: [{ cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
       totalPage: 0,
       dataListSelections: [],
       visible: false,
       dycpVisible: false,
       addOrUpdateVisible: false,
       cpresultVisible: false,
+      cpcontentchangeVisible: false,
       showhzFlag: false,
     }
   },
   components: {
-    Cpcontent, AddOrUpdate, Cpresult
+    Cpcontent, AddOrUpdate, Cpresult, Cpcontentchange
   },
   methods: {
-    // 单元测评
+
+    huizong(e) {
+      this.$http({
+        url: "/cp/projectuser/huizong",
+        method: "get",
+        params: {
+          projectid: this.projectid,
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          console.log('data', data)
+          this.$message({
+            message: data.msg,
+            type: 'success'
+          });
+          this.getDataList();
+        } else {
+        }
+      });
+    },
     cpresultHandle() {
       this.cpresultVisible = true
       this.$nextTick(() => {
         this.$refs.cpresult.getDataList(this.projectid)
       })
     },
+    // 测评修改
+    ztcpHandle(cpuid) {
+      this.cpcontentchangeVisible = true
+      this.$nextTick(() => {
+        this.$refs.cpcontentchange.getDataList(this.projectid, cpuid, 1)
+      })
+    },
     // 单元测评
-    dycpHandle() {
+    dycpHandle(id) {
+      var id = id == -1 ? '' : id
       this.dycpVisible = true
       this.$nextTick(() => {
-        this.$refs.dycp.getDataList(this.projectid)
+        this.$refs.dycp.getDataList(this.projectid, id, 0)
       })
     },
     // 获取数据列表
@@ -175,26 +203,23 @@ export default {
       this.dataListSelections = val
     },
     // 新增 / 修改
-    addOrUpdateHandle(id) {
-      this.addOrUpdateVisible = true
+    addOrUpdateHandle(cpuid) {
+      this.dycpVisible = true
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id)
+        this.$refs.dycp.getDataList(this.projectid, cpuid, 2)
       })
     },
     //获取是否完成测评
     getIsCpOK(projectid) {
       this.$http({
-        url: '/cp/nape/dycprwlist',
+        url: '/cp/projectuser/ishuizong',
         method: 'get',
         params: {
-          'projectid': projectid,
-          'cpnstatus': 0,
-          'page': 1,
-          'limit': 1,
         }
       }).then(({ data }) => {
+        console.log('show', data)
         if (data && data.code === 200) {
-          if (data.page.total == 0) {
+          if (data.data.ishuizong == 1) {
             this.showhzFlag = true;
           } else {
             this.showhzFlag = false;
