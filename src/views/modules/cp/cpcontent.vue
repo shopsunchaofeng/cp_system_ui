@@ -121,6 +121,7 @@ export default {
   },
   mounted() { },
   methods: {
+    
     xbplace(ind, e) {
       e = ind == 0 ? e.substring(9, e.length) : "";
       return e

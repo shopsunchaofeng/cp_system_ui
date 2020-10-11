@@ -1,104 +1,92 @@
 <template>
-  <div class="mod-content">
-    <el-row :gutter="20">
-      <el-col
-        :span="12"
-        v-for="(item, index) in testerData"
-        :key="index"
-        style="margin-bottom: 20px"
-      >
-        <div class="shadow">
-          <el-table :data="item.project" stripe border style="width: 100%">
-            <el-table-column label="测评单元" width="180" prop="name">
-            </el-table-column>
-            <el-table-column :label="item.testerLevel + item.testerName">
-              <template slot-scope="scope">
-                <el-row
-                  :gutter="20"
-                  v-for="(itemm, indexx) in scope.row.value"
-                  :key="indexx"
-                  style="margin-bottom: 20px"
-                >
-                  <el-col :span="8" v-text="itemm.name"> </el-col>
-                  <el-col :span="12" v-text="itemm.lable"> </el-col>
-                  <el-col :span="4" v-text="itemm.value"> </el-col>
-                </el-row>
-                <div>总分： {{ scope.row.total }}</div>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-container>
-            <el-main>
-              <el-col :span="16">
-                <el-row style="margin-bottom: 20px">
-                  <el-col :span="24"> 低风险：{{ item.difengxian }} </el-col>
-                </el-row>
-                <el-row style="margin-bottom: 20px">
-                  <el-col :span="24"> 中风险：{{ item.zhongfengxian }} </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24"> 高风险：{{ item.gaofengxian }} </el-col>
-                </el-row>
-              </el-col></el-main
-            >
-            <el-aside>总分：{{ item.total }} </el-aside>
-          </el-container>
-        </div>
-      </el-col>
-    </el-row>
-    <div class="shadow">
-      <table
-        style="width: 100%"
-        border="1"
-        cellspacing="0"
-        cellpadding="0"
-        class="midtable"
-      >
-        <tr>
-          <th style="width: 140px">测评单元</th>
-          <th colspan="5">整体测评</th>
-        </tr>
-        <tr>
-          <th>不适合项：</th>
-          <td>26项</td>
-          <td colspan="4">(物理位置选择 L2-PES1-01)</td>
-        </tr>
-        <tr>
-          <th></th>
-          <th style="width: 100px">分值</th>
-          <th style="width: 100px">高</th>
-          <th style="width: 100px">中</th>
-          <th style="width: 100px">低</th>
-          <th></th>
-        </tr>
-        <tr>
-          <th>安全通讯网络</th>
-          <td>0.5</td>
-          <td>1</td>
-          <td>2</td>
-          <td>3</td>
-          <td>物理位置选择 L2-PES1-01</td>
-        </tr>
-        <tr>
-          <th>总分</th>
-          <td>85</td>
-          <td>1</td>
-          <td>2</td>
-          <td>3</td>
-          <td></td>
-        </tr>
-      </table>
+  <el-dialog :title="`测评任务`" :close-on-click-modal="false" :visible.sync="visible" append-to-body width="80%" :close-on-press-escape="false">
+    <div class="mod-content">
+      <el-row :gutter="20">
+        <el-col :span="12" v-for="(item, index) in testerData" :key="index" style="margin-bottom: 20px">
+          <div class="shadow">
+            <el-table :data="item.project" stripe border style="width: 100%">
+              <el-table-column label="测评单元" width="180" prop="name">
+              </el-table-column>
+              <el-table-column :label="item.testerLevel + item.testerName">
+                <template slot-scope="scope">
+                  <el-row :gutter="20" v-for="(itemm, indexx) in scope.row.value" :key="indexx" style="margin-bottom: 20px">
+                    <el-col :span="8" v-text="itemm.name"> </el-col>
+                    <el-col :span="12" v-text="itemm.lable"> </el-col>
+                    <el-col :span="4" v-text="itemm.value"> </el-col>
+                  </el-row>
+                  <div>总分： {{ scope.row.total }}</div>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-container>
+              <el-main>
+                <el-col :span="16">
+                  <el-row style="margin-bottom: 20px">
+                    <el-col :span="24"> 低风险：{{ item.difengxian }} </el-col>
+                  </el-row>
+                  <el-row style="margin-bottom: 20px">
+                    <el-col :span="24"> 中风险：{{ item.zhongfengxian }} </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24"> 高风险：{{ item.gaofengxian }} </el-col>
+                  </el-row>
+                </el-col>
+              </el-main>
+              <el-aside>总分：{{ item.total }} </el-aside>
+            </el-container>
+          </div>
+        </el-col>
+      </el-row>
+      <div class="shadow">
+        <table style="width: 100%" border="1" cellspacing="0" cellpadding="0" class="midtable">
+          <tr>
+            <th style="width: 140px">测评单元</th>
+            <th colspan="5">整体测评</th>
+          </tr>
+          <tr>
+            <th>不适合项：</th>
+            <td>26项</td>
+            <td colspan="4">(物理位置选择 L2-PES1-01)</td>
+          </tr>
+          <tr>
+            <th></th>
+            <th style="width: 100px">分值</th>
+            <th style="width: 100px">高</th>
+            <th style="width: 100px">中</th>
+            <th style="width: 100px">低</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th>安全通讯网络</th>
+            <td>0.5</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>物理位置选择 L2-PES1-01</td>
+          </tr>
+          <tr>
+            <th>总分</th>
+            <td>85</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <div class="shadow">
+        <div id="main" style="width: 100%; height: 400px"></div>
+      </div>
     </div>
-    <div class="shadow">
-      <div id="main" style="width: 100%; height: 400px"></div>
-    </div>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
 export default {
   data() {
     return {
+      visible: false,
+
       testerData: [
         {
           testerName: "张明慧",
@@ -281,6 +269,24 @@ export default {
     this.myEcharts();
   },
   methods: {
+
+    // 获取数据列表
+    getDataList(projectid) {
+      this.visible = true;
+      this.$http({
+        url: "/cp/projectuser/huizong",
+        method: "get",
+        params: {
+          projectid: projectid,
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          console.log('data', data)
+          this.$forceUpdate();
+        } else {
+        }
+      });
+    },
     myEcharts() {
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById("main"));
