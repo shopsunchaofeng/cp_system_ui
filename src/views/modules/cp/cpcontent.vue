@@ -1,25 +1,14 @@
 <template>
-  <el-dialog
-    :title="`测评任务`"
-    :close-on-click-modal="false"
-    :visible.sync="visible"
-    width="80%"
-    :close-on-press-escape="false"
-  >
-    <div class="mod-content">
+  <el-dialog :title="`测评任务`" :close-on-click-modal="false" :visible.sync="visible" append-to-body width="80%" :close-on-press-escape="false">
+    <div class="mod-content" v-cloak>
       <div class="shadow">
-        <div class="cpPro" v-html="'测评师：' + detail.cpsname"></div>
+        <div class="cpPro" v-html="'测评师：' + detail.cpsname" v-show="detail.cpsname!=undefined"></div>
       </div>
-      <el-form
-        :model="dataForm"
-        :rules="dataRule"
-        ref="dataForm"
-        @keyup.enter.native="dataFormSubmit()"
-      >
+      <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()">
         <div class="shadow">
           <el-row :gutter="20">
-            <el-col :span="16"
-              ><div class="br1 pd32">
+            <el-col :span="16">
+              <div class="br1 pd32">
                 <h3 v-html="detail.yiceng"></h3>
                 <h4 v-html="detail.erceng"></h4>
                 <h4 v-html="detail.sanceng"></h4>
@@ -27,138 +16,52 @@
                 <div class="mb24" v-html="detail.yaoqiu"></div>
                 <div class="content mb24">
                   <span v-html="detail.xa"></span>
-                  <el-button
-                    type="primary"
-                    round
-                    icon="el-icon-circle-plus-outline"
-                    style="margin-left: 10px"
-                    @click="addNewDetailList()"
-                    >添加新的测评项</el-button
-                  >
+                  <el-button type="primary" round icon="el-icon-circle-plus-outline" style="margin-left: 10px" @click="addNewDetailList()">添加新的测评对象</el-button>
                 </div>
-
-                <div class="content mb24" v-html="detail.xb"></div>
-                <div class="content mb24">
-                  <el-row :gutter="20">
-                    <el-col :span="6"> 具体测评指标：</el-col>
-                    <el-col :span="18">
-                      <el-input
-                        placeholder="说明：涉及多项指标的逗号隔开"
-                        v-model="detail.juticpzb"
-                      ></el-input>
-                    </el-col>
-                  </el-row>
-                </div>
-                <div class="content mb24" v-html="detail.xc"></div>
-                <div v-for="(item, index) in detail.project" :key="index">
-                  <div class="mb24" v-html="item.name"></div>
-                  <div class="content">
-                    <el-row :gutter="20" class="mb12">
-                      <el-radio-group
-                        v-model="item.checked"
-                        @change="changeRadio(-1)"
-                      >
-                        <el-radio label="0">符合</el-radio>
-                        <el-radio label="1">不符合</el-radio>
-                      </el-radio-group>
-                    </el-row>
-                  </div>
+                <div v-for="(item, index) in dataForm.cpresult" :key="'cpresult-' + index">
                   <div class="content mb24">
-                    <el-row :gutter="20" class="content">
-                      <el-col :span="6" class="fz16"> 请填写原因：</el-col>
-                      <el-col :span="18">
-                        <el-input
-                          placeholder=""
-                          v-model="item.value"
-                        ></el-input>
-                      </el-col>
-                    </el-row>
-                  </div>
-                </div>
 
-                <el-divider></el-divider>
-                <div class="content mb24" v-html="detail.xd"></div>
-                <el-divider></el-divider>
-                <div class="content mb24">
-                  <el-form-item label="" prop="result">
-                    <el-radio-group v-model="detail.result">
-                      <el-radio :label="1" :disabled="detail.result != 1"
-                        >符合</el-radio
-                      >
-                      <el-radio
-                        :label="0.5"
-                        v-if="detail.isteshu == 0"
-                        :disabled="detail.result != 0.5"
-                        >部分符合
-                      </el-radio>
-                      <el-radio :label="0" :disabled="detail.result !== 0"
-                        >不符合
-                      </el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-                </div>
-                <el-divider></el-divider>
-
-                <div
-                  v-for="(item, index) in newDetailList"
-                  :key="'newDetailList' + index"
-                >
-                  <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> b) 测评对象：</el-col>
                       <el-col :span="18" class="content">
-                        <el-input
-                          placeholder=""
-                          v-model="item.xbName"
-                        ></el-input>
-
-                        <el-button
-                          type="danger"
-                          round
-                          icon="el-icon-delete"
-                          style="margin-left: 10px"
-                          @click="delThis(index)"
-                          >删除</el-button
-                        >
+                        <el-form-item :prop="'cpresult.'+ index + '.xbName'" :rules="{ required: true, message: '测评对象不能为空', trigger: 'blur' }" label-width="1px">
+                          <el-input v-model="item.xbName" :placeholder="xbplace(index,detail.xb)"></el-input>
+                        </el-form-item>
+                        <el-button type="danger" round icon="el-icon-delete" style="margin-left: 10px" @click="delThis(index)">删除</el-button>
                       </el-col>
                     </el-row>
+
                   </div>
                   <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> 具体测评指标：</el-col>
                       <el-col :span="18">
-                        <el-input
-                          placeholder="说明：涉及多项指标的逗号隔开"
-                          v-model="item.juticpzb"
-                        ></el-input>
+                        <el-form-item :prop="'cpresult.'+ index + '.juticpzb'" :rules="{ required: true, message: '具体测评指标不能为空', trigger: 'blur' }" label-width="1px">
+                          <el-input placeholder="说明：涉及多项指标的逗号隔开" v-model="item.juticpzb"></el-input>
+                        </el-form-item>
                       </el-col>
                     </el-row>
                   </div>
                   <div class="content mb24" v-html="detail.xc"></div>
-                  <div
-                    v-for="(itemm, indexx) in item.project"
-                    :key="'project' + indexx"
-                  >
+                  <div v-for="(itemm, indexx) in item.project" :key="'project' + indexx">
                     <div class="mb24" v-html="itemm.name"></div>
                     <div class="content">
                       <el-row :gutter="20" class="mb12">
-                        <el-radio-group
-                          v-model="itemm.checked"
-                          @change="changeRadio(index)"
-                        >
-                          <el-radio label="0">符合</el-radio>
-                          <el-radio label="1">不符合</el-radio>
-                        </el-radio-group>
+                        <el-form-item :prop="'cpresult.'+index+'.project.'+ indexx + '.checked'" :rules="{ required: true, message: '请选择测评结果', trigger: 'blur' }" label-width="1px">
+                          <el-radio-group v-model="itemm.checked" @change="changeRadio(index)">
+                            <el-radio label="0">符合</el-radio>
+                            <el-radio label="1">不符合</el-radio>
+                          </el-radio-group>
+                        </el-form-item>
                       </el-row>
                     </div>
                     <div class="content mb24">
                       <el-row :gutter="20" class="content">
                         <el-col :span="6" class="fz16"> 请填写原因：</el-col>
                         <el-col :span="18">
-                          <el-input
-                            placeholder=""
-                            v-model="itemm.value"
-                          ></el-input>
+                          <el-form-item :prop="'cpresult.'+index+'.project.'+ indexx + '.value'" :rules="{ required: true, message: '请填写原因', trigger: 'blur' }" label-width="1px">
+                            <el-input placeholder="" v-model="itemm.value"></el-input>
+                          </el-form-item>
                         </el-col>
                       </el-row>
                     </div>
@@ -169,37 +72,29 @@
                   <div class="content mb24">
                     <el-form-item label="" prop="result">
                       <el-radio-group v-model="item.result">
-                        <el-radio :label="1" :disabled="item.result != 1"
-                          >符合</el-radio
-                        >
-                        <el-radio
-                          :label="0.5"
-                          v-if="detail.isteshu == 0"
-                          :disabled="item.result != 0.5"
-                          >部分符合
+                        <el-radio :label="1" :disabled="item.result != 1">符合</el-radio>
+                        <el-radio :label="0.5" v-if="detail.isteshu == 0" :disabled="item.result != 0.5">部分符合
                         </el-radio>
-                        <el-radio :label="0" :disabled="item.result !== 0"
-                          >不符合</el-radio
-                        >
+                        <el-radio :label="0" :disabled="item.result !== 0">不符合</el-radio>
                       </el-radio-group>
                     </el-form-item>
                   </div>
                   <el-divider></el-divider>
-                </div></div
-            ></el-col>
-            <el-col :span="8"
-              ><div class="pd32">
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="pd32">
                 <h3 class="content mb24">作业指导书</h3>
-                <div v-html="detail.content"></div></div
-            ></el-col>
+                <div v-html="detail.content"></div>
+              </div>
+            </el-col>
           </el-row>
         </div>
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" round @click="dataFormSubmit()"
-        >保存并测评下一项</el-button
-      >
+      <el-button type="primary" round @click="dataFormSubmit()">保存并测评下一项</el-button>
     </span>
   </el-dialog>
 </template>
@@ -211,34 +106,30 @@ export default {
       visible: false,
       addOrUpdateVisible: false,
       detail: {},
-      newDetailList: [],
       dataForm: {
         id: "",
         napeid: "",
         projectid: "",
-        cpresult: {},
+        cpresult: [],
       },
-      dataRule: {
-        // result: [{ required: true, message: "结果不能为空", trigger: "blur" }],
-      },
+      dataRule: {},
     };
   },
-  mounted() {},
+  mounted() { },
   methods: {
+    xbplace(ind, e) {
+      e = ind == 0 ? e.substring(9, e.length) : "";
+      return e
+    },
     delThis(e) {
-      var list = this.newDetailList;
+      var list = this.dataForm.cpresult;
       list.splice(e, 1);
-      this.newDetailList = list;
+      this.dataForm.cpresult = list;
       this.$forceUpdate();
     },
     changeRadio(e) {
       console.log("e", e);
-      var project;
-      if (e == -1) {
-        project = this.detail.project;
-      } else {
-        project = this.newDetailList[e].project;
-      }
+      var project = this.dataForm.cpresult[e].project;
       var proFlag = project.some((item) => {
         if (item.checked == "") {
           return true;
@@ -267,43 +158,24 @@ export default {
         }
       }
       console.log("result", result);
-
-      if (e == -1) {
-        this.detail.result = result;
-      } else {
-        this.newDetailList[e].result = result;
-      }
+      this.dataForm.cpresult[e].result = result;
       this.$forceUpdate();
     },
     addNewDetailList() {
-      var project = JSON.parse(JSON.stringify(this.detail.project));
-      this.newDetailList.push({
-        juticpzb: "",
-        xbName: "",
-        project: project,
-        result: "",
-      });
+      var project = JSON.parse(JSON.stringify(this.detail.cpresult));
+      this.dataForm.cpresult.push(project);
+      this.$forceUpdate();
     },
     dataFormSubmit() {
-      var dataForm = this.dataForm;
-      var cpresult = [];
-      var baseproject = {};
-      baseproject.project = this.detail.project;
-      baseproject.result = this.detail.result;
-      baseproject.juticpzb = this.detail.juticpzb;
-
-      cpresult.push(baseproject);
-      if (this.newDetailList.length > 0) {
-        for (var i = 0; i < this.newDetailList.length; i++) {
-          cpresult.push(this.newDetailList[i]);
-        }
+      var dataForm = JSON.parse(JSON.stringify(this.dataForm));
+      if (this.dataForm.cpresult.length == 0) {
+        this.$message.error('请至少添加一个测评对象！');
+        return false;
       }
-
-      dataForm.cpresult = JSON.stringify(cpresult);
-
-      console.log("dataFrom", dataForm);
+      dataForm.cpresult = JSON.stringify(dataForm.cpresult);
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
+          console.log("dataFrom", dataForm);
           this.$http({
             url: `/cp/projectuser`,
             method: `${!dataForm.id || 0 ? "post" : "put"}`,
@@ -326,6 +198,13 @@ export default {
     // 获取数据列表
     getDataList(projectid) {
       this.visible = true;
+      this.detail = {};
+      this.dataForm = {
+        id: "",
+        napeid: "",
+        projectid: "",
+        cpresult: [],
+      };
       this.dataForm.projectid = projectid;
       this.$http({
         url: "/cp/nape/dycprwlist",
@@ -344,7 +223,6 @@ export default {
           var iii = "xx" + ii;
           var project = [];
           while (data[iii] != undefined) {
-            console.log(data[iii]);
             if (data[iii] != "") {
               project.push({
                 name: data[iii],
@@ -362,12 +240,22 @@ export default {
               value: "",
             });
           }
-          data.project = project;
+          data.cpresult = {
+            project: JSON.parse(JSON.stringify(project)),
+            result: "",
+            juticpzb: "",
+          };
           console.log("project", project);
-          data.result = "";
-          data.juticpzb = "";
           this.detail = data;
+          this.dataForm.cpresult.push({
+            project: JSON.parse(JSON.stringify(project)),
+            result: "",
+            xbName: "",
+            juticpzb: "",
+          });
+          console.log("this.dataForm.cpresult", this.dataForm.cpresult);
           console.log("dataList", this.detail);
+          this.$forceUpdate();
         } else {
         }
       });
@@ -422,17 +310,27 @@ export default {
   font-size: 18px;
   font-weight: bold;
 }
-.el-form-item__label {
+.content .el-form-item__label {
   font-weight: bold;
 }
 .el-select-dropdown__item.selected {
   font-weight: normal !important;
   color: #606266 !important;
 }
-.el-form-item {
+.content .el-form-item {
   width: 100%;
+  margin-bottom: 0;
+}
+.content .el-form-item__error {
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 .fz18 {
   font-size: 18px;
+}
+
+[v-cloak] {
+  display: none !important;
 }
 </style>

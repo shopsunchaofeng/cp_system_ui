@@ -85,6 +85,7 @@
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
           <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="dycpHandle(scope.row.id)">单元测评</el-button>
+          <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">测评任务列表</el-button>
           <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
           <el-button v-if="isAuth('cp:project:cpdetail' && (scope.row.status ===3 || scope.row.status ===4)) && scope.row.status >1" type="text" size="small" @click="cpdetailHandle(scope.row.id)">查看测评结果</el-button>
           <el-button v-if="isAuth('cp:project:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
@@ -112,6 +113,8 @@
     <cprwnape  v-if="cprwVisible" ref="cprwnape" @refreshDataList="getDataList"></cprwnape>
     <!--单元测评页面-->
     <cpcontent  v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cpcontent>
+    <!--单元列表测评页面-->
+    <cpwnapeList  v-if="cpwnapeListVisible" ref="cpwnapeList" @refreshDataList="getDataList"></cpwnapeList>
   </div>
 </template>
 ·
@@ -122,6 +125,7 @@
   import ProjectCpuser from './projectcpuser'
   import Cprwnape from './cprwnape'
   import Cpcontent from './cpcontent'
+  import CpwnapeList from './cpwnapeList'
 
   export default {
     data () {
@@ -139,11 +143,12 @@
         cpuserVisible: false,
         cprwVisible: false,
         dycpVisible: false,
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        cpwnapeListVisible: false,
       }
     },
     components: {
-      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape,Cpcontent
+      AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape,Cpcontent,CpwnapeList
     },
     activated () {
       this.getDataList()
@@ -217,6 +222,13 @@
         this.cpuserVisible = true
         this.$nextTick(() => {
           this.$refs.projectcpuser.getDataList(projectid)
+        })
+      },
+      // 单元测评列表
+      cpwnapeListHandle (projectid) {
+        this.cpwnapeListVisible = true
+        this.$nextTick(() => {
+          this.$refs.cpwnapeList.getDataList(projectid)
         })
       },
       // 单元测评

@@ -3,6 +3,7 @@
     :title="`测评任务列表`"
     :close-on-click-modal="false"
     :visible.sync="visible"
+    :modal="false"
     :width="`1200px`">
     <div class="mod-nape">
       <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
@@ -30,6 +31,7 @@
         </el-form-item>
         <el-form-item>
           <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('cp:project:dycp')" type="primary" size="small" @click="dycpHandle">开始单元测评</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -88,12 +90,16 @@
             <el-tag v-if="scope.row.cpnstatus ==='2'">已汇总</el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="cpsname"
-          header-align="center"
-          align="center"
-          label="测评师">
-        </el-table-column>
+      <!-- <el-table-column
+        fixed="right"
+        header-align="center"
+        align="center"
+        width="150"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="isAuth('cp:project:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+        </template>
+      </el-table-column> -->
       </el-table>
       <el-pagination
         @size-change="sizeChangeHandle"
@@ -106,12 +112,17 @@
       </el-pagination>
       <!-- 弹窗, 新增 / 修改 -->
       <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+
+    <!--单元测评页面-->
+    <cpcontent  v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cpcontent>
+
     </div>
   </el-dialog>
 </template>
 
 <script>
   import AddOrUpdate from './nape-add-or-update'
+  import Cpcontent from './cpcontent'
 
   export default {
     data () {
@@ -134,13 +145,21 @@
         totalPage: 0,
         dataListSelections: [],
         visible:false,
+        dycpVisible: false,
         addOrUpdateVisible: false
       }
     },
     components: {
-      AddOrUpdate
+     Cpcontent, AddOrUpdate
     },
     methods: {
+      // 单元测评
+      dycpHandle () {
+        this.dycpVisible = true
+        this.$nextTick(() => {
+          this.$refs.dycp.getDataList(this.projectid)
+        })
+      },
       // 获取数据列表
       getDataList (projectid,systemdengji) {
         this.visible=true
