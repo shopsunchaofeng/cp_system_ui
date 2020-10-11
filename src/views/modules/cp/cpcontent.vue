@@ -1,6 +1,6 @@
 <template>
   <el-dialog :title="`测评任务`" :close-on-click-modal="false" :visible.sync="visible" append-to-body width="80%" :close-on-press-escape="false">
-    <div class="mod-content" v-cloak>
+    <div class="mod-content" v-cloak v-if="!showNull">
       <div class="shadow">
         <div class="cpPro" v-html="'测评师：' + detail.cpsname" v-show="detail.cpsname!=undefined"></div>
       </div>
@@ -93,9 +93,12 @@
         </div>
       </el-form>
     </div>
-    <span slot="footer" class="dialog-footer">
+    <span slot="footer" class="dialog-footer" v-if="!showNull">
       <el-button type="primary" round @click="dataFormSubmit()">保存并测评下一项</el-button>
     </span>
+    <div class="shadow" v-if="showNull">
+      <h3 style="line-height:100px;text-align:center;">暂无可测评项</h3>
+    </div>
   </el-dialog>
 </template>
 
@@ -103,6 +106,7 @@
 export default {
   data() {
     return {
+      showNull: false,
       visible: false,
       addOrUpdateVisible: false,
       detail: {},
@@ -216,6 +220,12 @@ export default {
         },
       }).then(({ data }) => {
         if (data && data.code === 200) {
+          if (data.page.total == 0) {
+            this.showNull = true;
+            return false;
+          } else {
+            this.showNull = false;
+          }
           var data = data.page.records[0];
           this.dataForm.id = data.cpuid;
           this.dataForm.napeid = data.id;
