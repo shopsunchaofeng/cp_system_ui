@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="`测评任务列表`" :close-on-click-modal="false" :visible.sync="visible" :modal="false" :width="`1200px`">
+  <el-dialog :title="`测评任务列表`" :close-on-click-modal="false" :visible.sync="visible" :modal="false" :width="`1200px`" @close="closeDialog">
     <div class="mod-nape">
       <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
         <el-form-item>
@@ -208,6 +208,9 @@ export default {
       this.$nextTick(() => {
         this.$refs.dycp.getDataList(this.projectid, cpuid, 2)
       })
+    },
+    closeDialog(){
+      this.$emit("refreshDataList");
     },
     //获取是否完成测评
     getIsCpOK(projectid) {

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="`整体测评`" :close-on-click-modal="false" :visible.sync="visible" :modal="false" :width="`1200px`">
+  <el-dialog :title="`整体测评`" :close-on-click-modal="false" :visible.sync="visible" :modal="false" :width="`1200px`" @close="closeDialog">
     <div class="mod-nape">
       <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
         <!-- <el-form-item>
@@ -130,8 +130,13 @@ export default {
             type: 'success',
             duration: 1500
           })
+          this.$emit("refreshDataList");
         }
       })
+    },
+
+    closeDialog(){
+      this.$emit("refreshDataList");
     },
     // 单元测评
     cpresultHandle() {
