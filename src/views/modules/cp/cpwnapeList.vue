@@ -212,14 +212,17 @@ export default {
     //获取是否完成测评
     getIsCpOK(projectid) {
       this.$http({
-        url: '/cp/projectuser/ishuizong',
+        url: '/cp/nape/dycprwlist',
         method: 'get',
         params: {
+          'projectid': projectid,
+          'cpnstatus': 0,
+          'page': 1,
+          'limit': 1,
         }
       }).then(({ data }) => {
-        console.log('show', data)
         if (data && data.code === 200) {
-          if (data.data.ishuizong == 1) {
+          if (data.page.total == 0) {
             this.showhzFlag = true;
           } else {
             this.showhzFlag = false;
