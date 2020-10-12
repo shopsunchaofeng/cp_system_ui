@@ -117,10 +117,11 @@ export default {
   methods: {
     // 确认提交
     querentijiao() {
+      var that=this;
+      console.log('tag', this.projectid)
       this.$http({
-        url: `/cp/projectuser/tijiao`,
+        url: `/cp/projectuser/tijiao?projectid=${that.projectid}`,
         method: `get`,
-        data: { projectid: this.projectid }
       }).then(({ data }) => {
         if (data && data.code === 200) {
           this.visible = false
