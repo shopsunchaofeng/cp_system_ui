@@ -194,8 +194,8 @@ export default {
                 type: "success",
                 duration: 1500,
               });
+              this.$emit("refreshDataList");
               this.getDataList(this.dataForm.projectid);
-              // this.$emit("refreshDataList");
             }
           });
         }
