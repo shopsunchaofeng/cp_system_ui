@@ -93,7 +93,6 @@
 </template>
 
 <script>
-import result from "../../../utils/result.json";
 export default {
   data() {
     return {
