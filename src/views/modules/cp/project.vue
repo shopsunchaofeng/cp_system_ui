@@ -49,6 +49,7 @@
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
           <!-- <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="dycpHandle(scope.row.id)">单元测评</el-button> -->
           <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">测评任务列表</el-button>
+          <el-button  type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看结果页</el-button>
           <el-button v-if="isAuth('cp:project:ztcp') && showhzFlag && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
           <!-- <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button> -->
           <el-button v-if="isAuth('cp:project:cpdetail' && (scope.row.status ===3 || scope.row.status ===4)) && scope.row.status >1" type="text" size="small" @click="cpdetailHandle(scope.row.id)">查看测评结果</el-button>
@@ -74,6 +75,8 @@
     <cpwnapeList v-if="cpwnapeListVisible" ref="cpwnapeList" @refreshDataList="getDataList"></cpwnapeList>
     <!-- 整体测评列表 -->
     <cpwnapeListTotal v-if="cpwnapeListTotalVisible" ref="cpwnapeListTotal" @refreshDataList="getDataList"></cpwnapeListTotal>
+    <!-- 测评结果 -->
+    <cpresult v-if="cpresultVisible" ref="cpresult" @refreshDataList="getDataList"></cpresult>
   </div>
 </template>
 ·
@@ -86,6 +89,7 @@ import Cprwnape from './cprwnape'
 import Cpcontent from './cpcontent'
 import CpwnapeList from './cpwnapeList'
 import CpwnapeListTotal from './cpwnapeListTotal'
+import Cpresult from './cpresult'
 
 export default {
   data() {
@@ -106,11 +110,12 @@ export default {
       addOrUpdateVisible: false,
       cpwnapeListVisible: false,
       cpwnapeListTotalVisible: false,
+      cpresultVisible: false,
       showhzFlag: false,
     }
   },
   components: {
-    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList,CpwnapeListTotal
+    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList,CpwnapeListTotal,Cpresult
   },
   activated() {
     this.getDataList()
@@ -211,6 +216,13 @@ export default {
       this.cpwnapeListTotalVisible = true
       this.$nextTick(() => {
         this.$refs.cpwnapeListTotal.getDataList(projectid)
+      })
+    },
+    // 单元测评结果
+    cpresultHandle(projectid) {
+      this.cpresultVisible = true
+      this.$nextTick(() => {
+        this.$refs.cpresult.getDataList(projectid)
       })
     },
     // 单元测评列表

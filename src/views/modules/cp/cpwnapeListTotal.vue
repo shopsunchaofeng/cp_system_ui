@@ -50,16 +50,11 @@
             <el-tag v-if="scope.row.cpnstatus ==='2'">已汇总</el-tag>
           </template>
         </el-table-column> -->
-        <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button v-if="isAuth('cp:project:update')" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
-        </template>
-      </el-table-column>
+        <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+          <template slot-scope="scope">
+            <el-button v-if="isAuth('cp:project:update')" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" :current-page="searchForm.page" :page-sizes="[8, 10, 20, 50, 100]" :page-size="searchForm.limit" :total="totalPage" layout="total, sizes, prev, pager, next, jumper">
       </el-pagination>
@@ -77,7 +72,7 @@
 
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="cpresultHandle">确认提交</el-button>
+      <el-button type="primary" @click="querentijiao">确认提交</el-button>
     </span>
   </el-dialog>
 </template>
@@ -105,7 +100,7 @@ export default {
       dataList: [],
       cpuserList: [],
       projectid: '',
-      cpnstatusList: [ { cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
+      cpnstatusList: [{ cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
       totalPage: 0,
       dataListSelections: [],
       visible: false,
@@ -117,9 +112,26 @@ export default {
     }
   },
   components: {
-    Cpcontent, AddOrUpdate, Cpresult,Cpcontentchange
+    Cpcontent, AddOrUpdate, Cpresult, Cpcontentchange
   },
   methods: {
+    // 确认提交
+    querentijiao() {
+      this.$http({
+        url: `/cp/projectuser/tijiao`,
+        method: `get`,
+        data: { projectid: this.projectid }
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          this.visible = false
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: 1500
+          })
+        }
+      })
+    },
     // 单元测评
     cpresultHandle() {
       this.cpresultVisible = true
@@ -131,14 +143,14 @@ export default {
     dycpHandle(cpuid) {
       this.dycpVisible = true
       this.$nextTick(() => {
-        this.$refs.dycp.getDataList(this.projectid,cpuid,3)
+        this.$refs.dycp.getDataList(this.projectid, cpuid, 3)
       })
     },
     // 整体测评
     ztcpHandle(cpuid) {
       this.cpcontentchangeVisible = true
       this.$nextTick(() => {
-        this.$refs.cpcontentchange.getDataList(this.projectid,cpuid,3)
+        this.$refs.cpcontentchange.getDataList(this.projectid, cpuid, 3)
       })
     },
     // 获取数据列表
