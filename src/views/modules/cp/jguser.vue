@@ -158,7 +158,7 @@
       // 获取数据列表
       getDataList () {
         this.$http({
-          url: '/base/user/cpslist',
+          url: '/base/user/jglist',
           method: 'get',
           params: {
             'page': this.searchForm.page,

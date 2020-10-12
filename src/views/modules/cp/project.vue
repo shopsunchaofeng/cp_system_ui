@@ -34,7 +34,7 @@
           <el-tag v-if="scope.row.status ===0">待挑选不适合项目</el-tag>
           <el-tag v-if="scope.row.status ===1">待分配</el-tag>
           <el-tag v-if="scope.row.status ===2 && scope.row.cpuid !== '0'">测评中</el-tag>
-          <el-tag v-if="scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1)">单元测评完成</el-tag>
+          <el-tag v-if="scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4)">单元测评完成</el-tag>
           <el-tag v-if="scope.row.status ===4">整体测评完成</el-tag>
         </template>
       </el-table-column>
