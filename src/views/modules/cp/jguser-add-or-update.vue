@@ -111,7 +111,7 @@
       callbackOss (param) {
         // this.dataForm.imageId = param[0][0]
         this.imagesArray = param[1]
-        this.dataForm.images = param[1].join(',')
+        this.dataForm.cpLogo = param[1].join(',')
       },
       init (id) {
         this.dataForm.id = id || undefined
