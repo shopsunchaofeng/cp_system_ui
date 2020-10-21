@@ -48,7 +48,8 @@
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
           <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
-          <el-button  v-if="isAuth('cp:project:cpdetail') && scope.row.status ===4" type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看测评结果</el-button>
+          <el-button v-if="isAuth('cp:project:cpdetail') && scope.row.status ===4" type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看测评结果</el-button>
+          <el-button v-if="isAuth('cp:project:cpdetail')" type="text" size="small" @click="editContentHandle(scope.row.id)"> 编辑测评对象</el-button>
           <el-button v-if="isAuth('cp:project:ztcp') && showhzFlag && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
           <!-- <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button> -->
           <el-button v-if="isAuth('cp:project:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
@@ -75,6 +76,8 @@
     <cpwnapeListTotal v-if="cpwnapeListTotalVisible" ref="cpwnapeListTotal" @refreshDataList="getDataList"></cpwnapeListTotal>
     <!-- 测评结果 -->
     <cpresult v-if="cpresultVisible" ref="cpresult" @refreshDataList="getDataList"></cpresult>
+    <!-- 测评结果 -->
+    <edit-content v-if="editContentVisible" ref="editContent" @refreshDataList="getDataList"></edit-content>
   </div>
 </template>
 ·
@@ -88,6 +91,7 @@ import Cpcontent from './cpcontent'
 import CpwnapeList from './cpwnapeList'
 import CpwnapeListTotal from './cpwnapeListTotal'
 import Cpresult from './cpresult'
+import EditContent from './editContent'
 
 export default {
   data() {
@@ -109,11 +113,12 @@ export default {
       cpwnapeListVisible: false,
       cpwnapeListTotalVisible: false,
       cpresultVisible: false,
+      editContentVisible: false,
       showhzFlag: false,
     }
   },
   components: {
-    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList,CpwnapeListTotal,Cpresult
+    AddOrUpdate, FenpNape, BushiheNape, ProjectCpuser, Cprwnape, Cpcontent, CpwnapeList, CpwnapeListTotal, Cpresult, EditContent
   },
   activated() {
     this.getDataList()
@@ -207,6 +212,13 @@ export default {
       this.cpuserVisible = true
       this.$nextTick(() => {
         this.$refs.projectcpuser.getDataList(projectid)
+      })
+    },
+    // 编辑测评对象
+    editContentHandle(projectid) {
+      this.editContentVisible = true
+      this.$nextTick(() => {
+        this.$refs.editContent.getDataList(projectid)
       })
     },
     // 整体测评列表
