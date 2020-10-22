@@ -33,8 +33,9 @@
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status ===0">待挑选不适合项目</el-tag>
           <el-tag v-if="scope.row.status ===1">待分配</el-tag>
+          <el-tag v-if="scope.row.status ===11">待编辑测评对象</el-tag>
           <el-tag v-if="scope.row.status ===2 && scope.row.cpuid !== '0'">测评中</el-tag>
-          <el-tag v-if="scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4)">单元测评完成</el-tag>
+          <el-tag v-if="scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4 && scope.row.status !==11)">单元测评完成</el-tag>
           <el-tag v-if="scope.row.status ===4">整体测评完成</el-tag>
         </template>
       </el-table-column>
@@ -47,12 +48,12 @@
           <el-button v-if="isAuth('cp:nape:fenpei') && scope.row.status ===1 && scope.row.type ===1" type="text" size="small" @click="fenpeiHandle(scope.row.id,scope.row.systemdengji)">分配测评任务</el-button>
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
-          <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
+          <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
+          <!--<el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>-->
           <el-button v-if="isAuth('cp:project:cpdetail') && scope.row.status ===4" type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看测评结果</el-button>
           <el-button v-if="isAuth('cp:project:cpdetail')" type="text" size="small" @click="editContentListHandle(scope.row.id)"> 编辑测评对象列表</el-button>
           <!-- <el-button v-if="isAuth('cp:project:cpdetail')" type="text" size="small" @click="editContentHandle(scope.row.id)"> 编辑测评对象</el-button> -->
           <el-button v-if="isAuth('cp:project:ztcp') && showhzFlag && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
-          <!-- <el-button v-if="isAuth('cp:project:ztcp') && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button> -->
           <el-button v-if="isAuth('cp:project:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>

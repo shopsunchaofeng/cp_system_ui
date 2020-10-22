@@ -17,8 +17,19 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="cpuserid" placeholder="选择测评师">
-          <el-option value="-1" key="-1" label="请选择测评师"></el-option>
+        <el-select v-model="zcpuserid" placeholder="选择中级测评师">
+          <el-option value="-1" key="-1" label="请选择中级测评师"></el-option>
+          <el-option
+            v-for="store in zcpuserList"
+            :key="store.id"
+            :label="store.realName"
+            :value="store.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="cpuserid" placeholder="选择初级测评师">
+          <el-option value="-1" key="-1" label="请选择初级测评师"></el-option>
           <el-option
             v-for="store in cpuserList"
             :key="store.id"
@@ -156,8 +167,10 @@
         },
         dataList: [],
         cpuserList: [],
+        zcpuserList: [],
         projectid: '',
         cpuserid: '-1',
+        zcpuserid: '-1',
         isfenpList: [{isfenp:-1,fenpStatus:"全部"},{isfenp:2,fenpStatus:"未分配"},{isfenp:3,fenpStatus:"已分配"}],
         totalPage: 0,
         dataListSelections: [],
@@ -177,6 +190,7 @@
           this.searchForm.jibie=systemdengji
         }
         this.getcpuserHandle()
+        this.getzcpuserHandle()
         this.$http({
           url: '/cp/nape/bushihelist',
           method: 'get',
@@ -225,10 +239,21 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
-      //获取所有测评师
+      //获取中级测评师
+      getzcpuserHandle() {
+        this.$http({
+          url: `/cp/project/getcpuserList?projectid=${this.projectid}&jibie=2`,
+          method: 'GET'
+        }).then(({data}) => {
+          if (data && data.code === 200) {
+            this.zcpuserList = data.data
+          }
+        })
+      },
+      //获取初级测评师
       getcpuserHandle() {
         this.$http({
-          url: `/cp/project/getcpuserList?projectid=${this.projectid}`,
+          url: `/cp/project/getcpuserList?projectid=${this.projectid}&jibie=1`,
           method: 'GET'
         }).then(({data}) => {
           if (data && data.code === 200) {
@@ -281,7 +306,15 @@
       fenpeiHandle (id) {
         if (this.cpuserid === '-1'){
           this.$message({
-            message: '请选择测评师!',
+            message: '请选择初级测评师!',
+            type: 'error',
+            duration: 1500
+          })
+          return false
+        }
+        if (this.zcpuserid === '-1'){
+          this.$message({
+            message: '请选择中级测评师!',
             type: 'error',
             duration: 1500
           })
@@ -291,7 +324,7 @@
           return item.id
         })
           this.$http({
-            url: `/cp/nape/fenpei/${ids}?projectid=${this.projectid}&cpuserid=${this.cpuserid}`,
+            url: `/cp/nape/fenpei/${ids}?projectid=${this.projectid}&cpuserid=${this.cpuserid}&zcpuserid=${this.zcpuserid}`,
             method: 'get'
           }).then(({data}) => {
             if (data && data.code === 200) {
