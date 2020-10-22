@@ -51,8 +51,7 @@
           <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
           <!--<el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>-->
           <el-button v-if="isAuth('cp:project:cpdetail') && scope.row.status ===4" type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看测评结果</el-button>
-          <el-button v-if="isAuth('cp:project:cpdetail')" type="text" size="small" @click="editContentListHandle(scope.row.id)"> 编辑测评对象列表</el-button>
-          <!-- <el-button v-if="isAuth('cp:project:cpdetail')" type="text" size="small" @click="editContentHandle(scope.row.id)"> 编辑测评对象</el-button> -->
+          <el-button v-if="isAuth('cp:project:cpObject') && scope.row.zcpuid !=='0'" type="text" size="small" @click="editContentListHandle(scope.row.id)"> 编辑测评对象</el-button>
           <el-button v-if="isAuth('cp:project:ztcp') && showhzFlag && scope.row.status ===3 && scope.row.type ===1" type="text" size="small" @click="ztcpHandle(scope.row.id)">整体测评</el-button>
           <el-button v-if="isAuth('cp:project:remove')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
