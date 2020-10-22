@@ -150,7 +150,7 @@ export default {
       });
     },
     // 获取数据列表
-    getDataList(projectid) {
+    getDataList(projectid, cpuid, status) {
       this.visible = true;
       this.detail = {};
       this.dataForm = {
@@ -166,10 +166,10 @@ export default {
         method: "get",
         params: {
           page: 1,
-          cpnstatus: 0,
+          cpnstatus: status,
           limit: 1,
           projectid: projectid,
-          cpuid: ''
+          cpuid: cpuid
         },
       }).then(({ data }) => {
         if (data && data.code === 200) {
