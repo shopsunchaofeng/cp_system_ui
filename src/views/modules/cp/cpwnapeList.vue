@@ -23,7 +23,7 @@
         <el-form-item>
           <el-button @click="getDataList()">查询</el-button>
           <el-button v-if="isAuth('cp:project:dycp')" type="primary" size="small" @click="dycpHandle(-1)">开始单元测评</el-button>
-          <el-button @click="huizong" type="success" v-if="showhzFlag">测评汇总</el-button>
+          <el-button @click="huizong" type="success" v-if="showhzFlag&&iscepingFlag">测评汇总</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="dataList" border @selection-change="selectionChangeHandle" style="width: 100%;">
