@@ -53,7 +53,7 @@
         <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
           <template slot-scope="scope">
             <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===0" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">测评</el-button>
-            <el-button v-if="scope.row.status ===1"  type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">修改</el-button>
+            <el-button v-if="scope.row.status ===1" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">修改</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,6 +64,9 @@
 
       <!--单元测评页面-->
       <cpcontent v-if="dycpVisible" ref="dycp" @refreshDataList="getDataList"></cpcontent>
+
+      <!--非单元测评页面-->
+      <cpcontent-f v-if="dycpfVisible" ref="dycpf" @refreshDataList="getDataList"></cpcontent-f>
 
       <!--单元测评汇总页面-->
       <cpresult v-if="cpresultVisible" ref="cpresult" @refreshDataList="getDataList"></cpresult>
@@ -78,6 +81,7 @@
 <script>
 import AddOrUpdate from './nape-add-or-update'
 import Cpcontent from './cpcontent'
+import CpcontentF from './cpcontentF'
 import Cpresult from './cpresult'
 import Cpcontentchange from './cpcontentchange'
 
@@ -103,14 +107,16 @@ export default {
       dataListSelections: [],
       visible: false,
       dycpVisible: false,
+      dycpfVisible: false,
       addOrUpdateVisible: false,
       cpresultVisible: false,
       cpcontentchangeVisible: false,
       showhzFlag: false,
+      iscepingFlag: false,
     }
   },
   components: {
-    Cpcontent, AddOrUpdate, Cpresult, Cpcontentchange
+    Cpcontent, AddOrUpdate, Cpresult, Cpcontentchange, CpcontentF
   },
   methods: {
 
@@ -149,10 +155,17 @@ export default {
     // 单元测评
     dycpHandle(id) {
       var id = id == -1 ? '' : id
-      this.dycpVisible = true
-      this.$nextTick(() => {
-        this.$refs.dycp.getDataList(this.projectid, id, 0)
-      })
+      if (this.iscepingFlag) {
+        this.dycpVisible = true
+        this.$nextTick(() => {
+          this.$refs.dycp.getDataList(this.projectid, id, 0)
+        })
+      } else {
+        this.dycpfVisible = true
+        this.$nextTick(() => {
+          this.$refs.dycpf.getDataList(this.projectid, id, 0)
+        })
+      }
     },
     // 获取数据列表
     getDataList(projectid, systemdengji) {
@@ -162,6 +175,7 @@ export default {
         this.searchForm.jibie = systemdengji
       }
       this.getIsCpOK(this.projectid)
+      this.getIsceping(this.projectid)
       this.$http({
         url: '/cp/nape/dycprwlist',
         method: 'get',
@@ -209,7 +223,7 @@ export default {
         this.$refs.dycp.getDataList(this.projectid, cpuid, 2)
       })
     },
-    closeDialog(){
+    closeDialog() {
       this.$emit("refreshDataList");
     },
     //获取是否完成测评
@@ -229,6 +243,24 @@ export default {
             this.showhzFlag = true;
           } else {
             this.showhzFlag = false;
+          }
+        }
+      })
+    },
+    //是否是测评师
+    getIsceping() {
+      this.$http({
+        url: '/cp/projectuser/ishuizong',
+        method: 'get',
+        params: {
+        }
+      }).then(({ data }) => {
+        console.log('show', data)
+        if (data && data.code === 200) {
+          if (data.data.ishuizong == 1) {
+            this.iscepingFlag = true;
+          } else {
+            this.iscepingFlag = false;
           }
         }
       })

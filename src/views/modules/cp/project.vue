@@ -49,7 +49,7 @@
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
           <!--非测评机构-->
-          <el-button v-if="isAuth('cp:project:dycp')&& !showhzFlag && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">非单元测评</el-button>
+          <el-button v-if="isAuth('cp:project:dycp')&& !showhzFlag && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="fcpwnapeListHandle(scope.row.id)">非单元测评</el-button>
           <!--测评机构-->
           <el-button v-if="isAuth('cp:project:dycp') && showhzFlag && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
           <!--<el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>-->
@@ -250,8 +250,16 @@ export default {
         this.$refs.cpresult.getDataList(projectid)
       })
     },
-    // 单元测评列表
+    
+    // 单元测评列表-测评机构
     cpwnapeListHandle(projectid) {
+      this.cpwnapeListVisible = true
+      this.$nextTick(() => {
+        this.$refs.cpwnapeList.getDataList(projectid)
+      })
+    },
+    // 单元测评列表-非测评机构
+    fcpwnapeListHandle(projectid) {
       this.cpwnapeListVisible = true
       this.$nextTick(() => {
         this.$refs.cpwnapeList.getDataList(projectid)
