@@ -131,8 +131,8 @@ export default {
         if (valid) {
           console.log("dataFrom", dataForm);
           this.$http({
-            url: `/cp/projectuser`,
-            method: `${!dataForm.id || 0 ? "post" : "put"}`,
+            url: `/cp/projectuser/editCpobject`,
+            method: `POST`,
             data: dataForm,
           }).then(({ data }) => {
             if (data && data.code === 200) {
@@ -162,11 +162,10 @@ export default {
       this.dataForm.projectid = projectid;
       this.status = status;
       this.$http({
-        url: "/cp/nape/dycprwlist",
+        url: "/cp/nape/dycpdxlist",
         method: "get",
         params: {
           page: 1,
-          cpnstatus: status,
           limit: 1,
           projectid: projectid,
           cpuid: cpuid

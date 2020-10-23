@@ -48,7 +48,10 @@
           <el-button v-if="isAuth('cp:nape:fenpei') && scope.row.status ===1 && scope.row.type ===1" type="text" size="small" @click="fenpeiHandle(scope.row.id,scope.row.systemdengji)">分配测评任务</el-button>
           <el-button v-if="isAuth('cp:nape:cprw') && scope.row.status ===2 && scope.row.type ===1" type="text" size="small" @click="cprwHandle(scope.row.id,scope.row.systemdengji)">查看测评任务</el-button>
           <el-button v-if="isAuth('cp:project:cps') && scope.row.status ===2" type="text" size="small" @click="showcpsHandle(scope.row.id)">查看测评师</el-button>
-          <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
+          <!--非测评机构-->
+          <el-button v-if="isAuth('cp:project:dycp')&& !showhzFlag && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">非单元测评</el-button>
+          <!--测评机构-->
+          <el-button v-if="isAuth('cp:project:dycp') && showhzFlag && scope.row.status ===2 && scope.row.cpuid !== '0'" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>
           <!--<el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===2 && !(scope.row.status ===3 || (scope.row.cpuid === '0' && scope.row.status !==0 && scope.row.status !==1 && scope.row.status !==4))" type="text" size="small" @click="cpwnapeListHandle(scope.row.id)">单元测评</el-button>-->
           <el-button v-if="isAuth('cp:project:cpdetail') && scope.row.status ===4" type="text" size="small" @click="cpresultHandle(scope.row.id)"> 查看测评结果</el-button>
           <el-button v-if="isAuth('cp:project:cpObject') && scope.row.zcpuid !=='0'" type="text" size="small" @click="editContentListHandle(scope.row.id)"> 编辑测评对象</el-button>

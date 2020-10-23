@@ -43,14 +43,14 @@
         </el-table-column>
         <el-table-column prop="cpnstatus" header-align="center" align="center" label="状态">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.cpnstatus ==='0'">未测评</el-tag>
-            <el-tag v-if="scope.row.cpnstatus ==='1'">已测评</el-tag>
-            <el-tag v-if="scope.row.cpnstatus ==='2'">已汇总</el-tag>
+            <el-tag v-if="scope.row.cpnstatus ==='-3'">未编辑</el-tag>
+            <el-tag v-if="scope.row.cpnstatus ==='-2'">已编辑</el-tag>
+            <el-tag v-if="scope.row.cpnstatus ==='0'">已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===0" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">编辑</el-button>
+            <el-button v-if="isAuth('cp:project:cpObject')" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,6 +71,10 @@
       <!-- 编辑测评对象 -->
       <edit-content v-if="editContentVisible" ref="editContent" @refreshDataList="getDataList"></edit-content>
     </div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取消</el-button>
+      <el-button type="primary" @click="huizong()">确定提交</el-button>
+    </span>
   </el-dialog>
 </template>
 
@@ -85,7 +89,7 @@ export default {
   data() {
     return {
       searchForm: {
-        cpnstatus: 0,
+        cpnstatus: -3,
         realName: '',
         yiceng: '',
         erceng: '',
@@ -98,7 +102,7 @@ export default {
       dataList: [],
       cpuserList: [],
       projectid: '',
-      cpnstatusList: [{ cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
+      cpnstatusList: [{ cpnstatus: -3, cpnstatusName: "未编辑" }, { cpnstatus: -2, cpnstatusName: "已编辑" }],
       totalPage: 0,
       dataListSelections: [],
       visible: false,
@@ -117,7 +121,7 @@ export default {
 
     huizong(e) {
       this.$http({
-        url: "/cp/projectuser/huizong",
+        url: "/cp/projectuser/cpObjectHuizong",
         method: "get",
         params: {
           projectid: this.projectid,
@@ -150,7 +154,7 @@ export default {
       }
       this.getIsCpOK(this.projectid)
       this.$http({
-        url: '/cp/nape/dycprwlist',
+        url: '/cp/nape/dycpdxlist',
         method: 'get',
         params: {
           'projectid': this.projectid,
