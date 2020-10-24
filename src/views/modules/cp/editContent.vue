@@ -34,12 +34,11 @@
                     <el-row :gutter="20">
                       <el-col :span="6"> 重要程度：</el-col>
                       <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.zycd'" :rules="{ required: false, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'cpresult.'+ index + '.zycd'" :rules="{ required: true, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
                           <el-select v-model="item.zycd" placeholder="请选择重要程度">
-                            <el-option :label="zycditem.name" :value="zycditem.value" v-for="(zycditem, zycdindex) in cepingzycdList" :key="'zycd'+zycdindex"></el-option>
+                            <el-option :label="zycditem.name" :value="zycditem.id" v-for="(zycditem, zycdindex) in cepingzycdList" :key="'zycd'+zycdindex"></el-option>
                           </el-select>
                         </el-form-item>
-
                       </el-col>
                     </el-row>
                   </div>
@@ -47,7 +46,7 @@
                     <el-row :gutter="20">
                       <el-col :span="6"> 测评方式：</el-col>
                       <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.cpfs'" :rules="{ required: false, message: '请选择测评方式', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'cpresult.'+ index + '.cpfs'" :rules="{ required: true, message: '请选择测评方式', trigger: 'blur' }" label-width="1px">
                           <el-select v-model="item.cpfs" placeholder="请选择测评方式">
                             <el-option label="访谈" value="0"></el-option>
                             <el-option label="核查" value="1"></el-option>
