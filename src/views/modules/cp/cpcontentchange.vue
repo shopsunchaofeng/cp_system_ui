@@ -16,30 +16,24 @@
                 <div class="mb24" v-html="detail.yaoqiu"></div>
                 <div class="content mb24">
                   <span v-html="detail.xa"></span>
-                  <el-button type="primary" round icon="el-icon-circle-plus-outline" style="margin-left: 10px" @click="addNewDetailList()">添加新的测评对象</el-button>
                 </div>
                 <div v-for="(item, index) in dataForm.cpresult" :key="'cpresult-' + index">
                   <div class="content mb24">
-
                     <el-row :gutter="20">
                       <el-col :span="6"> b) 测评对象：</el-col>
-                      <el-col :span="18" class="content">
-                        <el-form-item :prop="'cpresult.'+ index + '.xbName'" :rules="{ required: true, message: '测评对象不能为空', trigger: 'blur' }" label-width="1px">
-                          <el-input v-model="item.xbName" :placeholder="xbplace(index,detail.xb)"></el-input>
-                        </el-form-item>
-                        <el-button type="danger" round icon="el-icon-delete" style="margin-left: 10px" @click="delThis(index)">删除</el-button>
-                      </el-col>
+                      <el-col :span="18" class="content" v-text="item.xbName"></el-col>
                     </el-row>
-
                   </div>
                   <div class="content mb24">
                     <el-row :gutter="20">
-                      <el-col :span="6"> 具体测评指标：</el-col>
-                      <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.juticpzb'" :rules="{ required: true, message: '具体测评指标不能为空', trigger: 'blur' }" label-width="1px">
-                          <el-input placeholder="说明：涉及多项指标的逗号隔开" v-model="item.juticpzb"></el-input>
-                        </el-form-item>
-                      </el-col>
+                      <el-col :span="6"> 重要程度：</el-col>
+                      <el-col :span="18" v-text="cepingzycdList[item.zycd].name"></el-col>
+                    </el-row>
+                  </div>
+                  <div class="content mb24">
+                    <el-row :gutter="20">
+                      <el-col :span="6"> 测评方式：</el-col>
+                      <el-col :span="18" v-text="cpfs[item.cpfs]"></el-col>
                     </el-row>
                   </div>
                   <div class="content mb24" v-html="detail.xc"></div>
@@ -118,6 +112,8 @@ export default {
       },
       dataRule: {},
       status: 0,
+      cepingzycdList: [],
+      cpfs: ['访谈', '核查', '测试', '访谈、核查', '访谈、测试', '核查、测试',],
     };
   },
   mounted() { },
@@ -245,7 +241,6 @@ export default {
           console.log('data', data)
           this.dataForm.id = data.cpuid;
           this.dataForm.napeid = data.id;
-
           var ii = 1;
           var iii = "xx" + ii;
           var project = [];
@@ -270,12 +265,25 @@ export default {
           data.basecpresult = {
             project: JSON.parse(JSON.stringify(project)),
             result: "",
-            juticpzb: "",
+            zycd: "",
+            cpfs: "",
           };
           this.detail = data;
           this.dataForm.cpresult = JSON.parse(JSON.stringify(data.cpresult));
           console.log("this.dataForm.cpresult", this.dataForm.cpresult);
           console.log("dataList", this.detail);
+          this.$forceUpdate();
+        } else {
+        }
+      });
+      this.$http({
+        url: "/cp/param/list1",
+        method: "get",
+        params: {
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          this.cepingzycdList = data.data;
           this.$forceUpdate();
         } else {
         }

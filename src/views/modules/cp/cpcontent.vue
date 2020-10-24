@@ -15,53 +15,24 @@
                 <h4 v-html="detail[dindex].sanceng"></h4>
                 <h4 v-html="detail[dindex].siceng+dindex"></h4>
                 <div class="mb24" v-html="detail[dindex].yaoqiu"></div>
-                <div class="content mb24">
-                  <span v-html="detail[dindex].xa"></span>
-                  <el-button type="primary" round icon="el-icon-circle-plus-outline" style="margin-left: 10px" @click="addNewDetailList(dindex)">添加新的测评对象</el-button>
-                </div>
                 <div v-for="(item, index) in ditem.cpresult" :key="'cpresult-' + index">
                   <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> b) 测评对象：</el-col>
-                      <el-col :span="18" class="content">
-                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+ index + '.xbName'" :rules="{ required: false, message: '测评对象不能为空', trigger: 'blur' }" label-width="1px">
-                          <el-input v-model="item.xbName" :placeholder="xbplace(index,detail[dindex].xb)"></el-input>
-                        </el-form-item>
-                        <el-button type="danger" round icon="el-icon-delete" style="margin-left: 10px" @click="delThis(index,dindex)">删除</el-button>
+                      <el-col :span="18" class="content" v-text="item.xbName">
                       </el-col>
                     </el-row>
                   </div>
                   <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> 重要程度：</el-col>
-                      <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.zycd'" :rules="{ required: false, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
-                          <el-select v-model="item.zycd" placeholder="请选择重要程度">
-                            <el-option label="初级" value="0"></el-option>
-                            <el-option label="中级" value="1"></el-option>
-                            <el-option label="高级" value="2"></el-option>
-                          </el-select>
-                        </el-form-item>
-
-                      </el-col>
+                      <el-col :span="18" v-text="cepingzycdList[item.zycd].name"></el-col>
                     </el-row>
                   </div>
                   <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> 测评方式：</el-col>
-                      <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.cpfs'" :rules="{ required: false, message: '请选择测评方式', trigger: 'blur' }" label-width="1px">
-                          <el-select v-model="item.cpfs" placeholder="请选择测评方式">
-                            <el-option label="访谈" value="0"></el-option>
-                            <el-option label="核查" value="1"></el-option>
-                            <el-option label="测试" value="2"></el-option>
-                            <el-option label="访谈、核查" value="3"></el-option>
-                            <el-option label="访谈、测试" value="4"></el-option>
-                            <el-option label="核查、测试" value="5"></el-option>
-                          </el-select>
-                        </el-form-item>
-
-                      </el-col>
+                      <el-col :span="18" v-text="cpfs[item.cpfs]"></el-col>
                     </el-row>
                   </div>
                   <div class="content mb24" v-html="detail[dindex].xc"></div>
@@ -135,6 +106,8 @@ export default {
       dataForm: [],
       dataRule: {},
       status: 0,
+      cepingzycdList: [],
+      cpfs: ['访谈', '核查', '测试', '访谈、核查', '访谈、测试', '核查、测试',],
     };
   },
   mounted() { },
@@ -189,35 +162,35 @@ export default {
     },
     dataFormSubmit() {
       var dataForm = JSON.parse(JSON.stringify(this.dataForm));
+      // for (var i = 0; i < dataForm.length; i++) {
+      //   if (this.dataForm[i].cpresult.length == 0) {
+      //     this.$message.error(`请在${this.detail[i].siceng}至少添加一个测评对象！`);
+      //     return false;
+      //   }
+      // }
       for (var i = 0; i < dataForm.length; i++) {
-        if (this.dataForm[i].cpresult.length == 0) {
-          this.$message.error(`请在${this.detail[i].siceng}至少添加一个测评对象！`);
-          return false;
-        }
-      }
-      for (var i = 0; i < dataForm.length; i++) {
-      dataForm[i].cpresult = JSON.stringify(dataForm[i].cpresult);
+        dataForm[i].cpresult = JSON.stringify(dataForm[i].cpresult);
       }
       // this.$refs["dataForm"].validate((valid) => {
-        // if (valid) {
-          console.log("dataFrom", dataForm);
-          this.$http({
-            url: `/cp/projectuser/updates`,
-            method: `post`,
-            data: dataForm,
-          }).then(({ data }) => {
-            if (data && data.code === 200) {
-              // this.visible = false;
-              this.$message({
-                message: "操作成功",
-                type: "success",
-                duration: 1500,
-              });
-              this.$emit("refreshDataList");
-              this.getDataList(this.dataForm.projectid);
-            }
+      // if (valid) {
+      console.log("dataFrom", dataForm);
+      this.$http({
+        url: `/cp/projectuser/updates`,
+        method: `post`,
+        data: dataForm,
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          // this.visible = false;
+          this.$message({
+            message: "操作成功",
+            type: "success",
+            duration: 1500,
           });
-        // }
+          this.$emit("refreshDataList");
+          this.getDataList(this.dataForm.projectid);
+        }
+      });
+      // }
       // });
     },
     // 获取数据列表
@@ -236,15 +209,18 @@ export default {
         },
       }).then(({ data }) => {
         if (data && data.code === 200) {
-          if (data.page.total == 0) {
+          if (data.data.length == 0) {
             this.showNull = true;
             return false;
           } else {
             this.showNull = false;
           }
-          var data = data.page.records;
+          var data = data.data;
 
           for (var i = 0; i < data.length; i++) {
+            data[i].cpresult = JSON.parse(data[i].cpresult)
+            console.log("data[i].cpresult", data[i].cpresult);
+
             var dataForm = {
               id: data[i].cpuid,
               napeid: data[i].id,
@@ -272,25 +248,27 @@ export default {
                 value: "",
               });
             }
-            data[i].cpresult = {
-              project: JSON.parse(JSON.stringify(project)),
-              result: "",
-              zycd: "",
-              cpfs: "",
-            };
-            console.log("project", dataForm);
-            dataForm.cpresult.push({
-              project: JSON.parse(JSON.stringify(project)),
-              result: "",
-              xbName: "",
-              zycd: "",
-              cpfs: "",
-            });
+            for (var cpresulti = 0; cpresulti < data[i].cpresult.length; cpresulti++) {
+              data[i].cpresult[cpresulti].project = JSON.parse(JSON.stringify(project));
+            }
+            dataForm.cpresult = JSON.parse(JSON.stringify(data[i].cpresult));
             this.detail.push(data[i]);
             this.dataForm.push(dataForm);
           }
-          console.log("this.dataForm.cpresult", this.dataForm);
+          console.log("this.dataForm", this.dataForm);
           console.log("dataList", this.detail);
+          this.$forceUpdate();
+        } else {
+        }
+      });
+      this.$http({
+        url: "/cp/param/list1",
+        method: "get",
+        params: {
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          this.cepingzycdList = data.data;
           this.$forceUpdate();
         } else {
         }
