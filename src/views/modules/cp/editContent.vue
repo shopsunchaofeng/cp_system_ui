@@ -36,9 +36,7 @@
                       <el-col :span="18">
                         <el-form-item :prop="'cpresult.'+ index + '.zycd'" :rules="{ required: false, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
                           <el-select v-model="item.zycd" placeholder="请选择重要程度">
-                            <el-option label="初级" value="0"></el-option>
-                            <el-option label="中级" value="1"></el-option>
-                            <el-option label="高级" value="2"></el-option>
+                            <el-option :label="zycditem.name" :value="zycditem.value" v-for="(zycditem, zycdindex) in cepingzycdList" :key="'zycd'+zycdindex"></el-option>
                           </el-select>
                         </el-form-item>
 
@@ -101,6 +99,7 @@ export default {
         cpresult: [],
       },
       dataRule: {},
+      cepingzycdList: [],
     };
   },
   mounted() { },
@@ -136,14 +135,13 @@ export default {
             data: dataForm,
           }).then(({ data }) => {
             if (data && data.code === 200) {
-              // this.visible = false;
+              this.visible = false;
               this.$message({
                 message: "操作成功",
                 type: "success",
                 duration: 1500,
               });
               this.$emit("refreshDataList");
-              this.getDataList(this.dataForm.projectid);
             }
           });
         }
@@ -196,6 +194,19 @@ export default {
         } else {
         }
       });
+      this.$http({
+        url: "/cp/param/list1",
+        method: "get",
+        params: {
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          this.cepingzycdList = data.data;
+          this.$forceUpdate();
+        } else {
+        }
+      });
+
     },
   },
 };

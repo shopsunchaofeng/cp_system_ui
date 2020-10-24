@@ -227,12 +227,10 @@ export default {
       this.dataForm = [];
       this.status = status;
       this.$http({
-        url: "/cp/nape/dycprwlist",
+        url: "/cp/nape/dycprwDetailList",
         method: "get",
         params: {
-          page: 1,
           cpnstatus: status,
-          limit: 2,
           projectid: projectid,
           cpuid: cpuid
         },

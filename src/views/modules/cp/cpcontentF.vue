@@ -214,7 +214,7 @@ export default {
                 duration: 1500,
               });
               this.$emit("refreshDataList");
-              this.getDataList(this.dataForm.projectid);
+              this.getDataList(this.dataForm[0].projectid,'',0);
             }
           });
         // }
@@ -227,24 +227,23 @@ export default {
       this.dataForm = [];
       this.status = status;
       this.$http({
-        url: "/cp/nape/dycprwlist",
+        url: "/cp/nape/dycprwDetailList",
         method: "get",
         params: {
-          page: 1,
           cpnstatus: status,
-          limit: 2,
           projectid: projectid,
           cpuid: cpuid
         },
       }).then(({ data }) => {
+        console.log('data',data);
         if (data && data.code === 200) {
-          if (data.page.total == 0) {
+          if (data.data.length == 0) {
             this.showNull = true;
             return false;
           } else {
             this.showNull = false;
           }
-          var data = data.page.records;
+          var data = data.data;
 
           for (var i = 0; i < data.length; i++) {
             var dataForm = {
@@ -276,14 +275,14 @@ export default {
             }
             data[i].cpresult = {
               project: JSON.parse(JSON.stringify(project)),
-              result: "",
+              result: 0,
               zycd: "",
               cpfs: "",
             };
             console.log("project", dataForm);
             dataForm.cpresult.push({
               project: JSON.parse(JSON.stringify(project)),
-              result: "",
+              result: 0,
               xbName: "",
               zycd: "",
               cpfs: "",

@@ -24,6 +24,7 @@
           <el-button @click="getDataList()">查询</el-button>
           <el-button v-if="isAuth('cp:project:dycp')" type="primary" size="small" @click="dycpHandle(-1)">开始单元测评</el-button>
           <el-button @click="huizong" type="success" v-if="showhzFlag&&iscepingFlag">测评汇总</el-button>
+          <el-button @click="wancheng" type="success" v-if="showhzFlag">测评完成</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="dataList" border @selection-change="selectionChangeHandle" style="width: 100%;">
@@ -119,7 +120,25 @@ export default {
     Cpcontent, AddOrUpdate, Cpresult, Cpcontentchange, CpcontentF
   },
   methods: {
-
+    wancheng(e) {
+      this.$http({
+        url: "/cp/projectuser/huizong",
+        method: "get",
+        params: {
+          projectid: this.projectid,
+        },
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          console.log('data', data)
+          this.$message({
+            message: data.msg,
+            type: 'success'
+          });
+          this.getDataList();
+        } else {
+        }
+      });
+    },
     huizong(e) {
       this.$http({
         url: "/cp/projectuser/huizong",

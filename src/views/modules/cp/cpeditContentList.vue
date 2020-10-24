@@ -128,12 +128,12 @@ export default {
         },
       }).then(({ data }) => {
         if (data && data.code === 200) {
-          console.log('data', data)
           this.$message({
             message: data.msg,
             type: 'success'
           });
-          this.getDataList();
+          this.visible = false;
+          this.$emit("refreshDataList");
         } else {
         }
       });
