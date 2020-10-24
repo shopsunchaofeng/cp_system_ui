@@ -27,7 +27,7 @@
                   <div class="content mb24">
                     <el-row :gutter="20">
                       <el-col :span="6"> 重要程度：</el-col>
-                      <el-col :span="18" v-text="cepingzycdList[item.zycd].name"></el-col>
+                      <el-col :span="18" v-text="cepingzycdList[getzycdNumber(item.zycd)].name"></el-col>
                     </el-row>
                   </div>
                   <div class="content mb24">
@@ -118,7 +118,13 @@ export default {
   },
   mounted() { },
   methods: {
-
+    getzycdNumber(e) {
+      for (var i = 0; i < this.cepingzycdList.length; i++) {
+        if (e == this.cepingzycdList[i].id) {
+          return i;
+        }
+      }
+    },
     xbplace(ind, e) {
       e = ind == 0 ? e.substring(9, e.length) : "";
       return e
@@ -173,24 +179,25 @@ export default {
         this.$message.error('请至少添加一个测评对象！');
         return false;
       }
-      if (this.status == 3) {
+      if (this.status == 2) {
         dataForm.xresult = JSON.stringify(dataForm.cpresult)
         dataForm.cpresult = JSON.stringify(this.detail.cpresult);
       } else if (this.status == 1) {
         dataForm.cpresult = JSON.stringify(dataForm.cpresult);
       }
+      dataForm = [dataForm]
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           console.log("dataFrom", dataForm);
           var url = `/cp/projectuser`;
-          if (this.status == 3) {
+          if (this.status == 2) {
             url = `/cp/projectuser/update`;
           } else if (this.status == 1) {
             url = `/cp/projectuser`;
           }
           this.$http({
             url: url,
-            method: `${!dataForm.id || 0 ? "post" : "put"}`,
+            method: `post`,
             data: dataForm,
           }).then(({ data }) => {
             if (data && data.code === 200) {

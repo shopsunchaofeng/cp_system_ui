@@ -130,11 +130,12 @@ export default {
       }).then(({ data }) => {
         if (data && data.code === 200) {
           console.log('data', data)
+          this.visible = false
           this.$message({
             message: data.msg,
             type: 'success'
           });
-          this.getDataList();
+          this.$emit("refreshDataList");
         } else {
         }
       });
@@ -149,11 +150,12 @@ export default {
       }).then(({ data }) => {
         if (data && data.code === 200) {
           console.log('data', data)
+          this.visible = false
           this.$message({
             message: data.msg,
             type: 'success'
           });
-          this.getDataList();
+          this.$emit("refreshDataList");
         } else {
         }
       });

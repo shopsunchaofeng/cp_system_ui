@@ -2,12 +2,12 @@
   <el-dialog :title="`整体测评`" :close-on-click-modal="false" :visible.sync="visible" :modal="false" :width="`1200px`" @close="closeDialog">
     <div class="mod-nape">
       <el-form :inline="true" :model="searchForm" @keyup.enter.native="getDataList()">
-        <!-- <el-form-item>
+        <el-form-item>
           <el-select v-model="searchForm.cpnstatus" placeholder="所有状态">
             <el-option v-for="store in cpnstatusList" :key="store.cpnstatus" :label="store.cpnstatusName" :value="store.cpnstatus">
             </el-option>
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
         <el-form-item>
           <el-input v-model="searchForm.yiceng" placeholder="第一层" clearable></el-input>
         </el-form-item>
@@ -52,7 +52,7 @@
         </el-table-column> -->
         <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="isAuth('cp:project:update')" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
+            <el-button v-if="isAuth('cp:project:update')&&scope.row.cpnstatus===2" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,7 +87,7 @@ export default {
   data() {
     return {
       searchForm: {
-        cpnstatus: 3,
+        cpnstatus: 2,
         realName: '',
         yiceng: '',
         erceng: '',
@@ -100,7 +100,7 @@ export default {
       dataList: [],
       cpuserList: [],
       projectid: '',
-      cpnstatusList: [{ cpnstatus: 0, cpnstatusName: "未测评" }, { cpnstatus: 1, cpnstatusName: "已测评" }],
+      cpnstatusList: [{ cpnstatus: 2, cpnstatusName: "未整体测评" }, { cpnstatus: 3, cpnstatusName: "已整体测评" }],
       totalPage: 0,
       dataListSelections: [],
       visible: false,
@@ -149,14 +149,14 @@ export default {
     dycpHandle(cpuid) {
       this.dycpVisible = true
       this.$nextTick(() => {
-        this.$refs.dycp.getDataList(this.projectid, cpuid, 3)
+        this.$refs.dycp.getDataList(this.projectid, cpuid, 2)
       })
     },
     // 整体测评
     ztcpHandle(cpuid) {
       this.cpcontentchangeVisible = true
       this.$nextTick(() => {
-        this.$refs.cpcontentchange.getDataList(this.projectid, cpuid, 3)
+        this.$refs.cpcontentchange.getDataList(this.projectid, cpuid, 2)
       })
     },
     // 获取数据列表

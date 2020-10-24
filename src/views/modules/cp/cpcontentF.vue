@@ -4,10 +4,9 @@
       <div class="shadow">
         <div class="cpPro" v-html="'测评师：' + detail.cpsname" v-show="detail.cpsname!=undefined"></div>
       </div>
-      <!-- <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"> -->
-      <el-form :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()">
+      <el-form :rules="dataRule" :model="dataFormw" ref="dataForm" @keyup.enter.native="dataFormSubmit()">
         <div class="shadow">
-          <el-row :gutter="20" v-for="(ditem,dindex) in dataForm" :key="'dindex'+dindex" style="border-bottom:1px solid rgba(0, 0, 0, 0.1);position: relative;">
+          <el-row :gutter="20" v-for="(ditem,dindex) in dataFormw.dataForm" :key="'dindex'+dindex" style="border-bottom:1px solid rgba(0, 0, 0, 0.1);position: relative;">
             <el-col :span="16">
               <div class="br1 pd32">
                 <h3 v-html="detail[dindex].yiceng" v-if="dindex==0"></h3>
@@ -132,9 +131,12 @@ export default {
       visible: false,
       addOrUpdateVisible: false,
       detail: [],
-      dataForm: [],
+      dataFormw: {
+        dataForm: [],
+      },
       dataRule: {},
       status: 0,
+      cepingzycdList: [],
     };
   },
   mounted() { },
@@ -145,13 +147,13 @@ export default {
       return e
     },
     delThis(e, ii) {
-      var list = this.dataForm[ii].cpresult;
+      var list = this.dataFormw.dataForm[ii].cpresult;
       list.splice(e, 1);
-      this.dataForm[ii].cpresult = list;
+      this.dataFormw.dataForm[ii].cpresult = list;
       this.$forceUpdate();
     },
     changeRadio(e, iid) {
-      var project = this.dataForm[iid].cpresult[e].project;
+      var project = this.dataFormw.dataForm[iid].cpresult[e].project;
       var proFlag = project.some((item) => {
         if (item.checked == "") {
           return true;
@@ -179,52 +181,52 @@ export default {
           }
         }
       }
-      this.dataForm[iid].cpresult[e].result = result;
+      this.dataFormw.dataForm[iid].cpresult[e].result = result;
       this.$forceUpdate();
     },
     addNewDetailList(i) {
       var project = JSON.parse(JSON.stringify(this.detail[i].cpresult));
-      this.dataForm[i].cpresult.push(project);
+      this.dataFormw.dataForm[i].cpresult.push(project);
       this.$forceUpdate();
     },
     dataFormSubmit() {
-      var dataForm = JSON.parse(JSON.stringify(this.dataForm));
+      var dataForm = JSON.parse(JSON.stringify(this.dataFormw.dataForm));
       for (var i = 0; i < dataForm.length; i++) {
-        if (this.dataForm[i].cpresult.length == 0) {
+        if (this.dataFormw.dataForm[i].cpresult.length == 0) {
           this.$message.error(`请在${this.detail[i].siceng}至少添加一个测评对象！`);
           return false;
         }
       }
       for (var i = 0; i < dataForm.length; i++) {
-      dataForm[i].cpresult = JSON.stringify(dataForm[i].cpresult);
+        dataForm[i].cpresult = JSON.stringify(dataForm[i].cpresult);
       }
       // this.$refs["dataForm"].validate((valid) => {
-        // if (valid) {
-          console.log("dataFrom", dataForm);
-          this.$http({
-            url: `/cp/projectuser/updates`,
-            method: `post`,
-            data: dataForm,
-          }).then(({ data }) => {
-            if (data && data.code === 200) {
-              // this.visible = false;
-              this.$message({
-                message: "操作成功",
-                type: "success",
-                duration: 1500,
-              });
-              this.$emit("refreshDataList");
-              this.getDataList(this.dataForm[0].projectid,'',0);
-            }
+      // if (valid) {
+      console.log("dataFrom", dataForm);
+      this.$http({
+        url: `/cp/projectuser/updates`,
+        method: `post`,
+        data: dataForm,
+      }).then(({ data }) => {
+        if (data && data.code === 200) {
+          // this.visible = false;
+          this.$message({
+            message: "操作成功",
+            type: "success",
+            duration: 1500,
           });
-        // }
+          this.$emit("refreshDataList");
+          this.getDataList(this.dataFormw.dataForm[0].projectid, '', 0);
+        }
+      });
+      // }
       // });
     },
     // 获取数据列表
     getDataList(projectid, cpuid, status) {
       this.visible = true;
       this.detail = [];
-      this.dataForm = [];
+      this.dataFormw.dataForm = [];
       this.status = status;
       this.$http({
         url: "/cp/nape/dycprwDetailList",
@@ -235,7 +237,7 @@ export default {
           cpuid: cpuid
         },
       }).then(({ data }) => {
-        console.log('data',data);
+        console.log('data', data);
         if (data && data.code === 200) {
           if (data.data.length == 0) {
             this.showNull = true;
@@ -288,10 +290,22 @@ export default {
               cpfs: "",
             });
             this.detail.push(data[i]);
-            this.dataForm.push(dataForm);
+            this.dataFormw.dataForm.push(dataForm);
           }
-          console.log("this.dataForm.cpresult", this.dataForm);
+          console.log("this.dataFormw.dataForm.cpresult", this.dataFormw.dataForm);
           console.log("dataList", this.detail);
+          this.$http({
+            url: "/cp/param/list1",
+            method: "get",
+            params: {
+            },
+          }).then(({ data }) => {
+            if (data && data.code === 200) {
+              this.cepingzycdList = data.data;
+              console.log('this.cepingzycdList', this.cepingzycdList);
+            } else {
+            }
+          });
           this.$forceUpdate();
         } else {
         }
