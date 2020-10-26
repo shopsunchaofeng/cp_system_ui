@@ -53,8 +53,8 @@
         </el-table-column>
         <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="isAuth('cp:project:dycp') && scope.row.status ===0" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">测评</el-button>
-            <el-button v-if="scope.row.status ===1" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">修改</el-button>
+            <el-button v-if="isAuth('cp:project:dycp') && scope.row.cpnstatus ==='0'" type="text" size="small" @click="dycpHandle(scope.row.cpuid)">测评</el-button>
+            <el-button v-if="scope.row.cpnstatus ===1" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">修改</el-button>
           </template>
         </el-table-column>
       </el-table>

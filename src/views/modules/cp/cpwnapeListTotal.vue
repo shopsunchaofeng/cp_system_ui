@@ -52,7 +52,7 @@
         </el-table-column> -->
         <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="isAuth('cp:project:update')&&scope.row.cpnstatus===2" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
+            <el-button v-if="isAuth('cp:project:update')&&scope.row.cpnstatus==2" type="text" size="small" @click="ztcpHandle(scope.row.cpuid)">整体测评</el-button>
           </template>
         </el-table-column>
       </el-table>

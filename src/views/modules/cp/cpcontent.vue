@@ -13,7 +13,7 @@
                   <h3 v-html="detail[dindex].yiceng" v-if="dindex==0"></h3>
                   <h4 v-html="detail[dindex].erceng" v-if="dindex==0"></h4>
                   <h4 v-html="detail[dindex].sanceng"></h4>
-                  <h4 v-html="detail[dindex].siceng+dindex"></h4>
+                  <h4 v-html="detail[dindex].siceng"></h4>
                   <div class="mb24" v-html="detail[dindex].yaoqiu"></div>
                   <el-form-item label="" prop="">
                     <div v-for="(item, index) in ditem.cpresult" :key="item.index">
@@ -27,7 +27,7 @@
                       <div class="content mb24">
                         <el-row :gutter="20">
                           <el-col :span="6"> 重要程度：</el-col>
-                          <el-col :span="18" v-text="cepingzycdList[getzycdNumber(item.zycd)].name"></el-col>
+                          <el-col :span="18" v-text="cepingzycdList.length>0?cepingzycdList[getzycdNumber(item.zycd)].name:''"></el-col>
                         </el-row>
                       </div>
                       <div class="content mb24">
@@ -41,7 +41,7 @@
                         <div class="mb24" v-html="itemm.name"></div>
                         <div class="content">
                           <el-row :gutter="20" class="mb12">
-                            <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.checked'" :rules="{ required: false, message: '请选择测评结果', trigger: 'blur' }" label-width="1px">
+                            <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.checked'" :rules="{ required: true, message: '请选择测评结果', trigger: 'blur' }" label-width="1px">
                               <el-radio-group v-model="itemm.checked" @change="changeRadio(index,dindex)">
                                 <el-radio label="0">符合</el-radio>
                                 <el-radio label="1">不符合</el-radio>
@@ -49,11 +49,11 @@
                             </el-form-item>
                           </el-row>
                         </div>
-                        <div class="content mb24">
+                        <div class="content mb24" v-if="dataFormw.dataForm[dindex].cpresult[index].project[indexx].checked==1">
                           <el-row :gutter="20" class="content">
                             <el-col :span="6" class="fz16"> 请填写原因：</el-col>
                             <el-col :span="18">
-                              <el-form-item :prop="`dataForm.${dindex}.cpresult.${index}.project.${indexx}.value`" :rules="{ required: false, message: '请填写原因', trigger: 'blur' }" label-width="1px">
+                              <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.value'" :rules="dataFormw.dataForm[dindex].cpresult[index].project[indexx].checked==1?{ required: true,  message: '请填写原因', trigger: 'blur' }:[]" label-width="1px">
                                 <el-input placeholder="" v-model="itemm.value"></el-input>
                               </el-form-item>
                             </el-col>
@@ -107,7 +107,7 @@ export default {
       addOrUpdateVisible: false,
       detail: [],
       dataFormw: {
-        dataForm:[]
+        dataForm: []
       },
       dataRule: {},
       status: 0,

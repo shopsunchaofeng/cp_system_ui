@@ -12,7 +12,7 @@
                 <h3 v-html="detail[dindex].yiceng" v-if="dindex==0"></h3>
                 <h4 v-html="detail[dindex].erceng" v-if="dindex==0"></h4>
                 <h4 v-html="detail[dindex].sanceng"></h4>
-                <h4 v-html="detail[dindex].siceng+dindex"></h4>
+                <h4 v-html="detail[dindex].siceng"></h4>
                 <div class="mb24" v-html="detail[dindex].yaoqiu"></div>
                 <div class="content mb24">
                   <span v-html="detail[dindex].xa"></span>
@@ -23,7 +23,7 @@
                     <el-row :gutter="20">
                       <el-col :span="6"> b) 测评对象：</el-col>
                       <el-col :span="18" class="content">
-                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+ index + '.xbName'" :rules="{ required: false, message: '测评对象不能为空', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+ index + '.xbName'" :rules="{ required: true, message: '测评对象不能为空', trigger: 'blur' }" label-width="1px">
                           <el-input v-model="item.xbName" :placeholder="xbplace(index,detail[dindex].xb)"></el-input>
                         </el-form-item>
                         <el-button type="danger" round icon="el-icon-delete" style="margin-left: 10px" @click="delThis(index,dindex)">删除</el-button>
@@ -34,7 +34,7 @@
                     <el-row :gutter="20">
                       <el-col :span="6"> 重要程度：</el-col>
                       <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.zycd'" :rules="{ required: false, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+ index + '.zycd'" :rules="{ required: true, message: '请选择重要程度', trigger: 'blur' }" label-width="1px">
                           <el-select v-model="item.zycd" placeholder="请选择重要程度">
                             <el-option label="初级" value="0"></el-option>
                             <el-option label="中级" value="1"></el-option>
@@ -49,7 +49,7 @@
                     <el-row :gutter="20">
                       <el-col :span="6"> 测评方式：</el-col>
                       <el-col :span="18">
-                        <el-form-item :prop="'cpresult.'+ index + '.cpfs'" :rules="{ required: false, message: '请选择测评方式', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+ index + '.cpfs'" :rules="{ required: true, message: '请选择测评方式', trigger: 'blur' }" label-width="1px">
                           <el-select v-model="item.cpfs" placeholder="请选择测评方式">
                             <el-option label="访谈" value="0"></el-option>
                             <el-option label="核查" value="1"></el-option>
@@ -68,7 +68,7 @@
                     <div class="mb24" v-html="itemm.name"></div>
                     <div class="content">
                       <el-row :gutter="20" class="mb12">
-                        <el-form-item :prop="'cpresult.'+index+'.project.'+ indexx + '.checked'" :rules="{ required: false, message: '请选择测评结果', trigger: 'blur' }" label-width="1px">
+                        <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.checked'" :rules="{ required: true, message: '请选择测评结果', trigger: 'blur' }" label-width="1px">
                           <el-radio-group v-model="itemm.checked" @change="changeRadio(index,dindex)">
                             <el-radio label="0">符合</el-radio>
                             <el-radio label="1">不符合</el-radio>
@@ -76,11 +76,12 @@
                         </el-form-item>
                       </el-row>
                     </div>
-                    <div class="content mb24">
+                    <div class="content mb24" v-if="dataFormw.dataForm[dindex].cpresult[index].project[indexx].checked==1">
                       <el-row :gutter="20" class="content">
                         <el-col :span="6" class="fz16"> 请填写原因：</el-col>
                         <el-col :span="18">
-                          <el-form-item :prop="'cpresult.'+index+'.project.'+ indexx + '.value'" :rules="{ required: false, message: '请填写原因', trigger: 'blur' }" label-width="1px">
+                          <!-- <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.value'" :rules="{ required: true,  message: '请填写原因', trigger: 'blur' }" label-width="1px"> -->
+                          <el-form-item :prop="'dataForm.'+dindex+'.cpresult.'+index+'.project.'+ indexx + '.value'" :rules="dataFormw.dataForm[dindex].cpresult[index].project[indexx].checked==1?{ required: true,  message: '请填写原因', trigger: 'blur' }:[]" label-width="1px">
                             <el-input placeholder="" v-model="itemm.value"></el-input>
                           </el-form-item>
                         </el-col>
@@ -200,8 +201,8 @@ export default {
       for (var i = 0; i < dataForm.length; i++) {
         dataForm[i].cpresult = JSON.stringify(dataForm[i].cpresult);
       }
-      // this.$refs["dataForm"].validate((valid) => {
-      // if (valid) {
+      this.$refs["dataForm"].validate((valid) => {
+      if (valid) {
       console.log("dataFrom", dataForm);
       this.$http({
         url: `/cp/projectuser/updates`,
@@ -219,8 +220,8 @@ export default {
           this.getDataList(this.dataFormw.dataForm[0].projectid, '', 0);
         }
       });
-      // }
-      // });
+      }
+      });
     },
     // 获取数据列表
     getDataList(projectid, cpuid, status) {
@@ -277,14 +278,14 @@ export default {
             }
             data[i].cpresult = {
               project: JSON.parse(JSON.stringify(project)),
-              result: 0,
+              result: "",
               zycd: "",
               cpfs: "",
             };
             console.log("project", dataForm);
             dataForm.cpresult.push({
               project: JSON.parse(JSON.stringify(project)),
-              result: 0,
+              result: "",
               xbName: "",
               zycd: "",
               cpfs: "",
