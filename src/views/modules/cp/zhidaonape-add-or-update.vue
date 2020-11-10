@@ -37,29 +37,27 @@
     },
     methods: {
       init (napeid) {
-        this.dataForm.napeid = napeid || ''
+        debugger
+        if (napeid){
+          this.dataForm.napeid = napeid
+        }
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.napeid) {
             this.$http({
-              url: `/cp/napezhidao/info/${this.dataForm.napeid}`,
+              url: `/cp/napezhidao/info/${napeid}`,
               method: 'get'
             }).then(({data}) => {
               if (data && data.code === 200) {
-                debugger
                 if (data.data) {
+                  debugger
                   this.dataForm = data.data
-                }else{
-                  this.$refs['dataForm'].resetFields()
                 }
               }
             })
           }
         })
-        if (napeid){
-          this.dataForm.napeid = napeid
-        }
       },
       // 表单提交
       dataFormSubmit () {
@@ -68,7 +66,7 @@
             if (valid) {
               this.$http({
                 url: `/cp/napezhidao`,
-                method: `${!this.dataForm.id || 0 ? 'post' : 'put'}`,
+                method: `post`,
                 data: this.dataForm
               }).then(({data}) => {
                 if (data && data.code === 200) {
