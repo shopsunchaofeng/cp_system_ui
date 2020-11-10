@@ -61,7 +61,7 @@
           children: 'children'
         },
         visible: false,
-        roleList: [{roleId:15,roleName:'项目经理'},{roleId:16,roleName:'高级测评师'},{roleId:17,roleName:'中级测评师'},{roleId:18,roleName:'初级测评师'}],
+        roleList: [{roleId:15,roleName:'项目经理'},{roleId:17,roleName:'中级测评师'},{roleId:18,roleName:'初级测评师'}],
         dataForm: {
           orgName: '',
           id: undefined,

@@ -96,9 +96,9 @@
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
-      :current-page="pageIndex"
+      :current-page="searchForm.page"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
+      :page-size="searchForm.limit"
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
@@ -113,6 +113,8 @@
     data () {
       return {
         searchForm: {
+          page: 1,
+          limit: 10,
           realName: ''
         },
         dataList: [],
@@ -166,7 +168,7 @@
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageIndex = val
+        this.searchForm.page = val
         this.getDataList()
       },
       // 多选

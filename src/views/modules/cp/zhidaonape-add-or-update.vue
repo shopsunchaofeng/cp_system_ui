@@ -24,7 +24,7 @@
       return {
         visible: false,
         dataForm: {
-          id: '',
+          id: 0,
           napeid: '',
           userid: '',
           content: ''},
@@ -47,13 +47,19 @@
               method: 'get'
             }).then(({data}) => {
               if (data && data.code === 200) {
+                debugger
                 if (data.data) {
                   this.dataForm = data.data
+                }else{
+                  this.$refs['dataForm'].resetFields()
                 }
               }
             })
           }
         })
+        if (napeid){
+          this.dataForm.napeid = napeid
+        }
       },
       // 表单提交
       dataFormSubmit () {
